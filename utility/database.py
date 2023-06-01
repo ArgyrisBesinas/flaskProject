@@ -9,6 +9,28 @@ def get_mysql_connection():
         db_connection = mysql.connector.connect(
             user=os.environ['MYSQL_USER'],
             password=os.environ['MYSQL_PASSWORD'],
+            host=os.environ['MYSQL_URL'],
+            database=os.environ['MYSQL_DB_NAME']
+        )
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
+        else:
+            print(err)
+
+        exit(1)
+    else:
+        return db_connection
+
+
+def init_db():
+
+    try:
+        mysql_connection = mysql.connector.connect(
+            user=os.environ['MYSQL_USER'],
+            password=os.environ['MYSQL_PASSWORD'],
             host=os.environ['MYSQL_URL']
         )
     except mysql.connector.Error as err:
@@ -17,19 +39,7 @@ def get_mysql_connection():
         else:
             print(err)
 
-        return None, err
-    else:
-        return db_connection, None
-        db_connection.close()
-
-    return None, 'get_mysql_connection error'
-
-
-def init_db():
-    mysql_connection, err = get_mysql_connection()
-    if err:
-        print('initDB error')
-        return 'initDB error'
+        exit(1)
 
     cursor = mysql_connection.cursor()
 
@@ -53,7 +63,7 @@ def init_db():
         "  `job_nr` int(11) NOT NULL AUTO_INCREMENT,"
         "  `uuid` varchar(50) NOT NULL,"
         "  `status` varchar(50) NOT NULL,"
-        "  `date` date NOT NULL,"
+        "  `date` datetime NOT NULL,"
         "  PRIMARY KEY (`job_nr`)"
         ") ENGINE=InnoDB")
 
@@ -70,7 +80,7 @@ def init_db():
         else:
             print("OK")
 
-    print(mysql_connection)
+    cursor.close()
 
 
 def create_database(cursor):
