@@ -38,7 +38,6 @@ def init_db():
             print("Something is wrong with your user name or password")
         else:
             print(err)
-
         exit(1)
 
     cursor = mysql_connection.cursor()
@@ -58,13 +57,45 @@ def init_db():
             exit(1)
 
     tables = {}
-    tables['employees'] = (
+    tables['jobs'] = (
         "CREATE TABLE `jobs` ("
-        "  `job_nr` int(11) NOT NULL AUTO_INCREMENT,"
+        "  `job_nr` int(11) NOT NULL UNIQUE AUTO_INCREMENT,"
         "  `uuid` varchar(50) NOT NULL,"
         "  `status` varchar(50) NOT NULL,"
         "  `date` datetime NOT NULL,"
         "  PRIMARY KEY (`job_nr`)"
+        ") ENGINE=InnoDB")
+
+    tables['snippet_sources'] = (
+        "CREATE TABLE `snippet_sources` ("
+        "  `snippet_source_id` int(11) NOT NULL UNIQUE AUTO_INCREMENT,"
+        "  `url` text NOT NULL,"
+        "  `user` int(11) NOT NULL,"
+        "  `last_updated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
+        "  `disabled` boolean NOT NULL,"
+        "  PRIMARY KEY (`snippet_source_id`)"
+        ") ENGINE=InnoDB")
+
+    tables['snippets'] = (
+        "CREATE TABLE `snippets` ("
+        "  `snippet_source_id` int(11) NOT NULL,"
+        "  `snippet_local_id` int(11) NOT NULL,"
+        "  `parent_id` int(11),"
+        "  `description` text NOT NULL,"
+        "  `code` text NOT NULL,"
+        "  PRIMARY KEY (`snippet_source_id`, `snippet_local_id`),"
+        "  FOREIGN KEY (snippet_source_id)"
+        "     REFERENCES snippet_sources (snippet_source_id)"
+        "     ON DELETE CASCADE"
+        ") ENGINE=InnoDB")
+
+    tables['users'] = (
+        "CREATE TABLE `users` ("
+        "  `user_id` int(11) NOT NULL AUTO_INCREMENT,"
+        "  `username` varchar(255) NOT NULL UNIQUE,"
+        "  `password` varchar(255) NOT NULL,"
+        "  `email` varchar(255) NOT NULL UNIQUE ,"
+        "  PRIMARY KEY (`user_id`)"
         ") ENGINE=InnoDB")
 
     for table_name in tables:
