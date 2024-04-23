@@ -69,10 +69,13 @@ def init_db():
     tables['snippet_sources'] = (
         "CREATE TABLE `snippet_sources` ("
         "  `snippet_source_id` int(11) NOT NULL UNIQUE AUTO_INCREMENT,"
-        "  `url` text NOT NULL,"
+        "  `name` varchar(500),"
+        "  `url` varchar(500) UNIQUE,"
+        "  `manual_entry` boolean NOT NULL DEFAULT false,"
+        "  `python_ver` varchar(50),"
         "  `user` int(11) NOT NULL,"
         "  `last_updated` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
-        "  `disabled` boolean NOT NULL,"
+        "  `disabled` boolean NOT NULL DEFAULT 0,"
         "  PRIMARY KEY (`snippet_source_id`)"
         ") ENGINE=InnoDB")
 
@@ -83,6 +86,7 @@ def init_db():
         "  `parent_id` int(11),"
         "  `description` text NOT NULL,"
         "  `code` text NOT NULL,"
+        "  `disabled` boolean NOT NULL DEFAULT 0,"
         "  PRIMARY KEY (`snippet_source_id`, `snippet_local_id`),"
         "  FOREIGN KEY (snippet_source_id)"
         "     REFERENCES snippet_sources (snippet_source_id)"
