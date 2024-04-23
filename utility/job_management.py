@@ -11,15 +11,19 @@ def insert_new_job_and_return_id():
     cursor = mysql_connection.cursor()
     # cursor.execute("USE {}".format(os.environ['MYSQL_DB_NAME']))
 
-    add_job = ("INSERT INTO jobs "
+    sql = ("INSERT INTO jobs "
                "(`uuid`,`status`,`date`) "
                "VALUES (%s, %s, %s)")
 
     data_job = (job_id, 'pending', str(datetime.now()))
 
-    cursor.execute(add_job, data_job)
+    try:
+        cursor.execute(sql, data_job)
+    except mysql_connection.connector.Error as err:
+        print('insert_new_job_and_return_id error.', err)
+    else:
+        mysql_connection.commit()
 
-    mysql_connection.commit()
     cursor.close()
 
     return job_id
@@ -30,15 +34,16 @@ def get_jobs_info_by_id(uuids):
 
     cursor = mysql_connection.cursor()
 
-    get_jobs = '''SELECT * FROM jobs 
+    sql = '''SELECT * FROM jobs 
                WHERE `uuid`IN (''' + ', '.join(['%s'] * len(uuids)) + ')'
 
-
-
-    cursor.execute(get_jobs, uuids)
-
-    result = cursor.fetchall()
-    print(result[0][1])
+    try:
+        cursor.execute(sql, uuids)
+    except mysql_connection.connector.Error as err:
+        print('get_jobs_info_by_id error.', err)
+    else:
+        result = cursor.fetchall()
+        print(result[0][1])
 
     cursor.close()
 

@@ -4,58 +4,67 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/static/dist/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/dist/bootstrap-table.min.css" rel="stylesheet">
+    <link href="/static/dist/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        #body_container {
+            padding-top: 70px;
+        }
+
+        #content {
+            padding-bottom: 10px;
+        }
+    </style>
     {% block head %}
         <title>{% block title %}{% endblock %} - My Webpage</title>
     {% endblock %}
 </head>
 <body>
 
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-        <div class="container-xl">
-            <a class="navbar-brand" href="/">Home</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/new_job">New Job</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/repos">Manage Repos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/recent_jobs">Recent Jobs</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" id="nav_search_field" placeholder="Job UUID" aria-label="Search">
-                    <button class="btn btn-outline-light" id="nav_search_button" type="button">Search</button>
-                </form>
-            </div>
-        </div>
-    </nav>
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
     <div class="container-xl">
-        <div id="content">{% block content %}{% endblock %}</div>
-
-
-        <div id="footer">
-            {% block footer %}
-                &copy; Copyright 2008 by <a href="http://domain.invalid/">you</a>.
-            {% endblock %}
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/new_job">New Job</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/repos">Manage Repos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/recent_jobs">Recent Jobs</a>
+                </li>
+            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" id="nav_search_field" placeholder="Job UUID"
+                       aria-label="Search">
+                <button class="btn btn-outline-light" id="nav_search_button" type="button">Search</button>
+            </form>
         </div>
     </div>
+</nav>
+
+<div id="body_container" class="container-xl">
+    <div id="content">{% block content %}{% endblock %}</div>
 
 
-
+    <div id="footer">
+        {% block footer %}
+            &copy; Copyright 2024 by <a href="http://domain.invalid/">you</a>.
+        {% endblock %}
+    </div>
+</div>
 
 
 <script src="/static/dist/bootstrap.bundle.min.js"></script>
 <script src="/static/dist/jquery-3.7.0.min.js"></script>
+<script src="/static/dist/bootstrap-table.min.js"></script>
 <script src="/static/base_html.js"></script>
 {% block script %}{% endblock %}
 </body>
