@@ -2,8 +2,9 @@ import utility.job_management as job_management
 import utility.jupyter_utils as jupyter_utils
 import utility.snippet_management as snippet_management
 import utility.custom_exceptions as exc
-import requests
+import synthesis.synthesize as synthesize
 from flask import render_template, request
+
 
 
 def define_routes(app):
@@ -31,13 +32,51 @@ def define_routes(app):
         else:
             return render_template('404.html')
 
-    @app.get('/create_new_job')
+    # init code synth and add job to db
+    @app.route('/create_new_job', methods=['POST'])
     def create_new_job():
-        return job_management.insert_new_job_and_return_id()
+
+        synth_source = request.form.get('synth_source')
+
+        try:
+            job_id = synthesize.initiate_synth(synth_source)
+
+        except (exc.MySqlError, exc.SynthesisError) as e:
+            return str(e), 400
+
+        return 'Job with id "' + str(job_id) + '" started successfully.'
+
+    # Get jobs in json for listing
+    @app.route('/get_jobs', methods=['GET'])
+    def get_jobs():
+
+        try:
+            jobs = job_management.get_jobs((), None, 'json')
+        except exc.MySqlError as e:
+            return str(e), 400
+
+        return jobs, 200
+
+    # Get jobs details by job_id
+    @app.route('/get_job_details', methods=['GET'])
+    def get_job_details():
+
+        job_id = request.args.get('job_id', None, int)
+        if job_id is None:
+            return 'job_id is required and must be int', 400
+
+        try:
+            jobs = job_management.get_jobs_details_by_id(job_id)
+        except exc.MySqlError as e:
+            return str(e), 400
+
+        return jobs, 200
 
     @app.get('/test')
     def test():
-        return job_management.get_jobs_info_by_id(('26274df8-5b52-4d85-b85f-552683515882', 'aaa'))
+
+        job_management.insert_job_output(1, 'code_output ', 3, 4)
+        return "aa", 200
 
     # import snippet from url sources
     @app.route('/import_snippets_url', methods=['GET', 'POST'])

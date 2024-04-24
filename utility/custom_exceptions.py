@@ -21,3 +21,8 @@ class InvalidJupyterNotebookError(Exception):
 class MySqlError(Exception):
     """MySQL Error"""
     pass
+
+
+class SynthesisError(Exception):
+    """Synthesis Error"""
+    pass

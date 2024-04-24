@@ -2,6 +2,7 @@ from utility.database import get_mysql_connection
 import utility.custom_exceptions as exc
 import mysql.connector.errors as db_errors
 import json
+import synthesis.preprocess as preprocess
 
 
 def insert_new_snippets(snippets, name, url, user, manual=False, python_ver=None):
@@ -32,7 +33,7 @@ def insert_new_snippets(snippets, name, url, user, manual=False, python_ver=None
                 snippet_source_id,
                 snippet.get('local_id'),
                 snippet.get('parent_id'),
-                snippet.get('desc'),
+                preprocess.preprocess_snippet_desc(snippet.get('desc')),
                 snippet.get('code'),
             )
         )
@@ -122,7 +123,7 @@ def update_snippets(snippet_source_id, name, snippets, url, user=None, python_ve
                 snippet_source_id,
                 snippet.get('local_id'),
                 snippet.get('parent_id'),
-                snippet.get('desc'),
+                preprocess.preprocess_snippet_desc(snippet.get('desc')),
                 snippet.get('code'),
             )
         )
@@ -190,8 +191,8 @@ def toggle_snippet_sources(snippet_source_ids, set_value, user=None):
     cursor = mysql_connection.cursor()
 
     sql = '''UPDATE snippet_sources 
-                SET disabled = %s
-                WHERE `snippet_source_id`IN (''' + ', '.join(['%s'] * len(snippet_source_ids)) + ')'
+             SET disabled = %s
+             WHERE `snippet_source_id`IN (''' + ', '.join(['%s'] * len(snippet_source_ids)) + ')'
     if user is not None:
         sql += "AND user = " + user
 

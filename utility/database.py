@@ -59,11 +59,29 @@ def init_db():
     tables = {}
     tables['jobs'] = (
         "CREATE TABLE `jobs` ("
-        "  `job_nr` int(11) NOT NULL UNIQUE AUTO_INCREMENT,"
-        "  `uuid` varchar(50) NOT NULL,"
+        "  `job_id` int(11) NOT NULL UNIQUE AUTO_INCREMENT,"
         "  `status` varchar(50) NOT NULL,"
-        "  `date` datetime NOT NULL,"
-        "  PRIMARY KEY (`job_nr`)"
+        "  `synth_source` text NOT NULL,"
+        "  `info` varchar(500),"
+        "  `progress_steps` varchar(50),"
+        "  `progress_percent` int(11),"
+        "  `date_start` timestamp DEFAULT CURRENT_TIMESTAMP,"
+        "  `date_end` timestamp,"
+        "  `user` int(11) NOT NULL,"
+        "  PRIMARY KEY (`job_id`)"
+        ") ENGINE=InnoDB")
+
+    tables['job_output'] = (
+        "CREATE TABLE `job_output` ("
+        "  `output_nr` int(11) NOT NULL UNIQUE AUTO_INCREMENT,"
+        "  `job_id` int(11) NOT NULL,"
+        "  `code` text NOT NULL,"
+        "  `snippet_source_id` int(11) NOT NULL,"
+        "  `snippet_local_id` int(11) NOT NULL,"
+        "  PRIMARY KEY (`output_nr`),"
+        "  FOREIGN KEY (job_id)"
+        "     REFERENCES jobs (job_id)"
+        "     ON DELETE CASCADE"
         ") ENGINE=InnoDB")
 
     tables['snippet_sources'] = (
