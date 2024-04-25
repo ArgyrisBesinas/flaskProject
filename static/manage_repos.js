@@ -127,7 +127,7 @@ function sourceDetailFormatter(index, row) {
           <thead>
             <tr>
               <th data-field="snippet_source_id" data-visible="false">source ID</th>
-              <th data-field="snippet_local_id">ID</th>
+              <th data-field="snippet_local_id" data-visible="false">ID</th>
               <th data-field="description">Description</th>
               <th data-field="code" data-formatter="codeFormatter">Code</th>
               <th data-field="disabled">Disabled</th>

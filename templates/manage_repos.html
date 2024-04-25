@@ -10,14 +10,17 @@
     <h5>Manage code snippet sources</h5>
 
     <div id="sources-table-toolbar">
+        <li class="btn btn-success">
+            <a class="nav-link" href="/import_repos" style="color: #EFEFEF;">+</a>
+        </li>
         <button id="enable-sources" class="btn btn-primary" disabled>
-            <i class="fa"></i> Enable sources
+            <i class="fa"></i> Enable
         </button>
         <button id="disable-sources" class="btn btn-primary" disabled>
-            <i class="fa"></i> Disable sources
+            <i class="fa"></i> Disable
         </button>
         <button id="delete-sources" class="btn btn-danger" disabled>
-            <i class="fa fa-trash"></i> Delete sources
+            <i class="fa fa-trash"></i> X
         </button>
     </div>
 
@@ -39,7 +42,7 @@
         <thead>
         <tr>
             <th data-field="state" data-checkbox="true"></th>
-            <th data-field="snippet_source_id" data-sortable="true">ID</th>
+            <th data-field="snippet_source_id" data-sortable="true" data-visible="false">ID</th>
             <th data-field="name" data-sortable="true">Item Name</th>
             <th data-field="url">URL</th>
             <th data-field="manual_entry" data-sortable="true" data-visible="false">Manual entry</th>

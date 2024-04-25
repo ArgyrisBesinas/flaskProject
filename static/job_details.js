@@ -5,7 +5,7 @@ $(document).ready(function () {
     let reloadId = setInterval(function () {
         let details = $("#job-details-table").bootstrapTable('getData');
 
-        if (details[0].status == "cancelled" || details[0].status == "finished") {
+        if (details[0].status == "Cancelled" || details[0].status == "Completed") {
             clearInterval(reloadId);
             return;
         }
