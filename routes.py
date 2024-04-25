@@ -6,7 +6,6 @@ import synthesis.synthesize as synthesize
 from flask import render_template, request
 
 
-
 def define_routes(app):
     @app.route('/')
     def hello_world():
@@ -16,21 +15,24 @@ def define_routes(app):
     def new_job():
         return render_template('home.html')
 
-    @app.route('/repos')
-    def repos():
-        return render_template('manage_repos.html')
+    @app.route('/list_job')
+    def new_job():
+        return render_template('home.html')
 
-    @app.get('/recent_jobs')
-    def recent_jobs():
-        return render_template('child.html')
-
-    @app.get('/job_info/')
-    @app.get('/job_info/<uuid>')
+    @app.get('/job_details/<uuid>')
     def job_info(uuid=None):
         if uuid == '123':
             return 'Job Info!'
         else:
             return render_template('404.html')
+
+    @app.route('/manage_repos')
+    def repos():
+        return render_template('manage_repos.html')
+
+    @app.route('/import_repos')
+    def import_repos():
+        return render_template('import_repos.html')
 
     # init code synth and add job to db
     @app.route('/create_new_job', methods=['POST'])

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Import Repos{% endblock %}
+{% block head %}
+    {{ super() }}
+
+    <style>
+        #nav-tab-content {
+            margin-bottom: 10px;
+        }
+
+        #import-url-submit, #import-file-submit, #import-text-submit {
+            margin-top: 10px;
+        }
+
+        #import-url-name, #import-file-name, #import-text-name {
+            margin-bottom: 12px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+
+    <h5>Import snippets from new source</h5>
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-import-url-tab" data-bs-toggle="tab" data-bs-target="#nav-import-url-card"
+                    type="button" role="tab">Import from Url
+            </button>
+            <button class="nav-link" id="nav-import-file-tab" data-bs-toggle="tab" data-bs-target="#nav-import-file-card"
+                    type="button" role="tab">Import from local file
+            </button>
+            <button class="nav-link" id="nav-import-text-tab" data-bs-toggle="tab" data-bs-target="#nav-import-text-card"
+                    type="button" role="tab">Import from text
+            </button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tab-content">
+        <div class="tab-pane card show active" id="nav-import-url-card" role="tabpanel" tabindex="0">
+            <div class="card-body">
+                <label for="import-url-name" class="form-label">Enter source name:</label>
+                <input type="text" class="form-control" id="import-url-name" placeholder="enter source name">
+                <label for="import-url" class="form-label">Enter url:</label>
+                <input type="text" class="form-control" id="import-url" placeholder="enter valid url"
+                       value="https://github.com/jakevdp/sklearn_tutorial/blob/master/notebooks/03.1-Classification-SVMs.ipynb">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="github-url-check" checked>
+                    <label class="form-check-label" for="github-url-check" data-bs-toggle="tooltip"
+                           data-bs-placement="right"
+                           data-bs-title="Check true if url is like 'https://github.com/*/blob/*'">
+                        Github url
+                    </label>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="import-url-submit">Import</button>
+            </div>
+        </div>
+
+        <div class="tab-pane card" id="nav-import-file-card" role="tabpanel" tabindex="0">
+            <div class="card-body">
+                <label for="import-file-name" class="form-label">Enter source name:</label>
+                <input type="text" class="form-control" id="import-file-name" placeholder="enter source name">
+                <label for="import-file" class="form-label">Select Jupyter file:</label>
+                <input class="form-control" type="file" id="import-file">
+
+                <button type="button" class="btn btn-primary" id="import-file-submit">Import</button>
+            </div>
+        </div>
+        <div class="tab-pane card" id="nav-import-text-card" role="tabpanel" tabindex="0">
+            <div class="card-body">
+                <label for="import-text-name" class="form-label">Enter source name:</label>
+                <input type="text" class="form-control" id="import-text-name" placeholder="enter source name">
+                <label for="import-text" class="form-label">Enter valid jupyter json:</label>
+                <textarea class="form-control" id="import-text" placeholder="enter valid jupyter json"></textarea>
+
+                <button type="button" class="btn btn-primary" id="import-text-submit">Import</button>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+{% block script %}
+    <script src="/static/import_repos.js"></script>
+{% endblock %}
