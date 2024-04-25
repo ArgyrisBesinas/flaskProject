@@ -17,6 +17,7 @@ def insert_new_job_and_return_id(synth_source, user=1):
         cursor.execute(sql, ('starting', synth_source, user))
     except db_errors.Error as err:
         print('insert_new_job_and_return_id error.', err)
+        mysql_connection.rollback()
         raise exc.MySqlError('Error inserting new job.')
     else:
         mysql_connection.commit()
@@ -65,6 +66,7 @@ def edit_job_by_id(job_id: int, status, info=None, progress_steps=None, progress
         cursor.execute(sql, (*sql_values, job_id))
     except db_errors.Error as err:
         print('edit_job_by_id error.', err)
+        mysql_connection.rollback()
         raise exc.MySqlError('Error editing job with id: ' + str(job_id))
     else:
         mysql_connection.commit()
@@ -108,7 +110,34 @@ def get_jobs(job_ids=(), user=None, data_type=None):
     return data
 
 
-def get_jobs_details_by_id(job_id, user=None):
+def delete_jobs(job_ids, user=None):
+    mysql_connection = get_mysql_connection()
+
+    cursor = mysql_connection.cursor()
+
+    sql = '''DELETE FROM jobs 
+                    WHERE `job_id`IN (''' + ', '.join(['%s'] * len(job_ids)) + ')'
+    if user is not None:
+        sql += "AND user = " + user
+
+    try:
+        cursor.execute(sql, job_ids)
+    except db_errors.Error as err:
+        print('delete_jobs error.', err)
+        mysql_connection.rollback()
+        raise exc.MySqlError('Error deleting jobs')
+    else:
+        print(cursor.rowcount, "jobs deleted.")
+        mysql_connection.commit()
+
+    jobs_deleted = cursor.rowcount
+
+    cursor.close()
+
+    return jobs_deleted
+
+
+def get_job_details_by_id(job_id, user=None):
 
     if job_id is None:
         raise exc.MySqlError('job_id required to get job details.')
@@ -143,7 +172,7 @@ def get_jobs_details_by_id(job_id, user=None):
 
     cursor = mysql_connection.cursor()
 
-    sql = 'SELECT * FROM job_output WHERE `job_id`=%s'
+    sql = 'SELECT * FROM job_output WHERE `job_id`=%s ORDER BY job_id DESC'
 
     try:
         cursor.execute(sql, (job_id,))
@@ -179,6 +208,7 @@ def insert_job_output(job_id: int, code_output, snippet_source_id, snippet_local
         cursor.execute(sql, (job_id, code_output, snippet_source_id, snippet_local_id))
     except db_errors.Error as err:
         print('insert_job_output error.', err)
+        mysql_connection.rollback()
         raise exc.MySqlError('Error inserting new job output.')
     else:
         mysql_connection.commit()
@@ -186,3 +216,25 @@ def insert_job_output(job_id: int, code_output, snippet_source_id, snippet_local
     cursor.close()
 
     return
+
+
+def get_latest_job_id(user=None):
+    mysql_connection = get_mysql_connection()
+
+    cursor = mysql_connection.cursor()
+
+    sql = 'SELECT MAX(job_id) FROM jobs'
+    if user is not None:
+        sql += ' WHERE user = ' + user
+
+    try:
+        cursor.execute(sql)
+    except db_errors.Error as err:
+        print('get_latest_job_id error.', err)
+        raise exc.MySqlError('Error getting jobs')
+
+    data = cursor.fetchall()
+
+    cursor.close()
+
+    return data[0][0]

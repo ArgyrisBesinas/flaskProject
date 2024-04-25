@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}List Jobs{% endblock %}
+{% block head %}
+    {{ super() }}
+
+    <style>
+        #cancel-job {
+            margin-right: 10px;
+        }
+    </style>
+
+{% endblock %}
+{% block content %}
+
+    <h5>List of past synthesis jobs</h5>
+
+    <div id="jobs-table-toolbar">
+        <button id="delete-jobs" class="btn btn-danger" disabled>
+            <i class="fa fa-trash"></i> Delete Jobs
+        </button>
+    </div>
+
+    <table
+            id="jobs-table"
+            data-height="750"
+            data-toolbar="#jobs-table-toolbar"
+            data-toggle="table"
+            data-click-to-select="false"
+            data-search="true"
+            data-search-accent-neutralise="true"
+            data-show-refresh="true"
+            data-show-toggle="true"
+            data-show-columns="true"
+            data-id-field="job_id"
+            data-detail-view="true"
+            data-url="/get_jobs">
+        <thead>
+        <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="job_id" data-sortable="true">ID</th>
+            <th data-field="synth_source">Synth Source</th>
+            <th data-field="date_start" data-sortable="true">Start Date</th>
+            <th data-field="date_end" data-sortable="true">End Date</th>
+            <th data-field="info">Info</th>
+            <th data-field="status" data-sortable="true">Status</th>
+            <th data-formatter="jobActionsFormatter" data-events="jobActionsEvents" data-align="center">Actions</th>
+        </tr>
+        </thead>
+    </table>
+
+{% endblock %}
+{% block script %}
+    <script src="/static/list_jobs.js"></script>
+{% endblock %}

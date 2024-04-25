@@ -3,6 +3,7 @@ $(document).ready(function () {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
+
     $("#import-url-submit").click(function () {
         let name = $("#import-url-name").val();
         let url = $("#import-url").val();

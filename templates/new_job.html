@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Start Code synthesis{% endblock %}
+{% block head %}
+    {{ super() }}
+
+    <style>
+        #synthesis-text {
+            margin-bottom: 10px;
+        }
+    </style>
+
+{% endblock %}
+{% block content %}
+
+    <h5>Start Code synthesis</h5>
+
+    <div class="card-body">
+        <label for="synthesis-text" class="form-label">Enter synthesis source text:</label>
+        <textarea class="form-control" id="synthesis-text" placeholder="enter synthesis source text" style="height: 500px"></textarea>
+
+        <button type="button" class="btn btn-primary" id="synthesis-text-submit">Import</button>
+    </div>
+
+{% endblock %}
+{% block script %}
+    <script src="/static/new_job.js"></script>
+{% endblock %}
