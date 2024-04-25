@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Job details{% endblock %}
+{% block head %}
+    {{ super() }}
+
+{% endblock %}
+{% block content %}
+
+    <h5>Job details</h5>
+
+    <table
+            id="job-details-table"
+            custom-job-id="{{ job_id }}"
+            data-toggle="table"
+            data-card-view="true"
+    >
+        <thead>
+        <tr>
+            <th data-field="job_id">Job Id</th>
+            <th data-field="status">Status</th>
+            <th data-field="progress_percent">Progress</th>
+            <th data-field="progress_steps">Steps</th>
+            <th data-field="synth_source">Synthesis Source</th>
+            <th data-field="info">Info</th>
+            <th data-field="date_start">Date Start</th>
+            <th data-field="date_end">Date End</th>
+        </tr>
+        </thead>
+    </table>
+
+
+    <div id="sources-table-toolbar" class="row justify-content-start align-middle" style='margin-top: 15px; margin-bottom: 5px;'>
+        <div class="col-auto "><h5 style='padding-top: 7px;'>Code output</h5></div>
+        <div class="col-auto">
+            <button id="copy-code" class="btn btn-primary">
+                <i class="fa"></i> Copy code
+            </button>
+        </div>
+    </div>
+    <table id="job-output-table"
+           data-toggle="table"
+            {#           data-toolbar="#sources-table-toolbar"#}
+           class="table">
+    </table>
+
+
+{% endblock %}
+{% block script %}
+    <script src="/static/job_details.js"></script>
+{% endblock %}

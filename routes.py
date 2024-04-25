@@ -6,7 +6,6 @@ import synthesis.synthesize as synthesize
 from flask import render_template, request
 
 
-
 def define_routes(app):
     @app.route('/')
     def hello_world():
@@ -14,23 +13,31 @@ def define_routes(app):
 
     @app.route('/new_job')
     def new_job():
-        return render_template('home.html')
+        return render_template('new_job.html')
 
-    @app.route('/repos')
+    @app.route('/list_jobs')
+    def list_job():
+        return render_template('list_jobs.html')
+
+    @app.get('/job_details/<job_id>')
+    def job_details(job_id):
+        if job_id == 'latest':
+            job_id = job_management.get_latest_job_id()
+        else:
+            try:
+                job_id = int(job_id)
+            except ValueError:
+                return 'job_id must me int or "latest"', 400
+
+        return render_template('job_details.html', job_id=job_id)
+
+    @app.route('/manage_repos')
     def repos():
         return render_template('manage_repos.html')
 
-    @app.get('/recent_jobs')
-    def recent_jobs():
-        return render_template('child.html')
-
-    @app.get('/job_info/')
-    @app.get('/job_info/<uuid>')
-    def job_info(uuid=None):
-        if uuid == '123':
-            return 'Job Info!'
-        else:
-            return render_template('404.html')
+    @app.route('/import_repos')
+    def import_repos():
+        return render_template('import_repos.html')
 
     # init code synth and add job to db
     @app.route('/create_new_job', methods=['POST'])
@@ -44,7 +51,8 @@ def define_routes(app):
         except (exc.MySqlError, exc.SynthesisError) as e:
             return str(e), 400
 
-        return 'Job with id "' + str(job_id) + '" started successfully.'
+        # return 'Job with id "' + str(job_id) + '" started successfully.'
+        return str(job_id)
 
     # Get jobs in json for listing
     @app.route('/get_jobs', methods=['GET'])
@@ -57,7 +65,40 @@ def define_routes(app):
 
         return jobs, 200
 
-    # Get jobs details by job_id
+    # Cancel job by job_id
+    @app.route('/cancel_job', methods=['POST'])
+    def cancel_job():
+
+        job_id = request.form.get('job_id', None, int)
+        if job_id is None:
+            return 'job_id is required and must be int', 400
+
+        try:
+            synthesize.cancel_synth_progress([job_id], 'Canceled by user.')
+        except (exc.MySqlError, exc.SynthesisError) as e:
+            return str(e), 400
+
+        return 'Job with id "' + str(job_id) + '" cancelled.', 200
+
+    # Delete jobs by job_id
+    @app.route('/delete_jobs', methods=['POST'])
+    def delete_job():
+
+        job_ids = request.form.to_dict(flat=False).get('job_ids')
+        if job_ids is None or len(job_ids) == 0:
+            return 'job_ids not found', 400
+
+        try:
+            rows = synthesize.cancel_synth_progress(job_ids, None, True)
+        except (exc.MySqlError, exc.SynthesisError) as e:
+            return str(e), 400
+        else:
+            if len(job_ids) > rows:
+                return str(rows) + ' out of ' + str(len(job_ids)) + ' jobs deleted', 200
+            else:
+                return str(rows) + ' jobs deleted', 200
+
+    # Get job details by job_id
     @app.route('/get_job_details', methods=['GET'])
     def get_job_details():
 
@@ -66,16 +107,16 @@ def define_routes(app):
             return 'job_id is required and must be int', 400
 
         try:
-            jobs = job_management.get_jobs_details_by_id(job_id)
+            job_details_data = job_management.get_job_details_by_id(job_id, None)
         except exc.MySqlError as e:
             return str(e), 400
 
-        return jobs, 200
+        return job_details_data, 200
 
     @app.get('/test')
     def test():
 
-        job_management.insert_job_output(1, 'code_output ', 3, 4)
+        job_management.insert_job_output(8, '''''', 3, 4)
         return "aa", 200
 
     # import snippet from url sources
