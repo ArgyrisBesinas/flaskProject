@@ -34,9 +34,6 @@ def update_synth_progress(job_id, status, info=None, progress_steps=None, progre
 
 # you can also use the two functions inside separately
 def cancel_synth_progress(job_id, info, progress_steps, progress_percent):
-
     timestamp_end = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
     job_management.edit_job_by_id(job_id, 'cancelled', info, progress_steps, progress_percent, timestamp_end)
-
 

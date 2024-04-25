@@ -1,6 +1,9 @@
 from flask import Flask
 from routes import define_routes
 from utility.database import init_db
+from dotenv import load_dotenv
+
+load_dotenv()  # load the .env file programmatically
 
 app = Flask(__name__)
 

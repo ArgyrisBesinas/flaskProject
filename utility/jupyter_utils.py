@@ -4,7 +4,6 @@ import utility.custom_exceptions as exc
 
 # returns snippets list
 def process_jupyter_json_from_github(url):
-
     # github urls are case-sensitive
     # url = url.lower()
     if 'https://github.com/' not in url or '/blob/' not in url:
@@ -29,8 +28,7 @@ def process_jupyter_json_from_url_raw(url):
         json = r.json()
     except requests.exceptions.JSONDecodeError as e:
         raise exc.JsonDecodeError('Json decode error')
-    else:
-        return extract_snippets_from_jupyter_json(json)
+    return extract_snippets_from_jupyter_json(json)
 
 
 def validate_jupyter_json(json, strict=False):
@@ -53,8 +51,7 @@ def validate_jupyter_json(json, strict=False):
 def validate_jupyter_cell(cell):
     if 'cell_type' not in cell or 'source' not in cell:
         return False
-    else:
-        return True
+    return True
 
 
 def extract_snippets_from_jupyter_json(json):
@@ -72,10 +69,8 @@ def extract_snippets_from_jupyter_json(json):
     for i, c in enumerate(cells):
         if not validate_jupyter_cell(c):
             continue
-
         if c.get('cell_type') != 'code':
             continue
-
         if cells[i-1].get('cell_type') == 'markdown':
             snippet = {
                 'local_id': local_id,
@@ -90,9 +85,7 @@ def extract_snippets_from_jupyter_json(json):
                 'desc': '',
                 'code': ' '.join(c.get('source'))
             }
-
         local_id += 1
-
         snippets.append(snippet)
 
     return snippets, python_ver
