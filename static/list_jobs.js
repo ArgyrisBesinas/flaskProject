@@ -55,7 +55,7 @@ function jobActionsFormatter(value, row, index) {
 
     let html = "";
 
-    if (row.status != "cancelled" && row.status != "finished") {
+    if (row.status != "Cancelled" && row.status != "Completed") {
         html += `<button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
     }
 

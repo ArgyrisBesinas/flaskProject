@@ -1,6 +1,8 @@
 import utility.job_management as job_management
 import utility.custom_exceptions as exc
+from synthesis.runner import start_synthesis
 from datetime import datetime
+from threading import Thread
 
 
 def initiate_synth(synth_source):
@@ -9,7 +11,9 @@ def initiate_synth(synth_source):
     if job_id is None:
         raise exc.MySqlError('Error inserting new job')
     # 2. start synth in module
-    # error = start_synth(text)
+    thread = Thread(target=start_synthesis, args=(job_id, synth_source))
+    thread.start()
+    #start_synthesis(job_id, synth_source)
     error = None
 
     if error is not None:
@@ -39,7 +43,7 @@ def cancel_synth_progress(job_ids, info=None, delete=False):
             progress_percent = None
             timestamp_end = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             # update job in db. Parameters =None will not be overwritten to null in db
-            job_management.edit_job_by_id(job_id, 'cancelled', info, progress_steps, progress_percent, timestamp_end)
+            job_management.edit_job_by_id(job_id, 'Cancelling...', info, progress_steps, progress_percent, timestamp_end)
 
     if delete:
         return job_management.delete_jobs(job_ids)
