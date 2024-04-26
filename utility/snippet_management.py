@@ -149,7 +149,7 @@ def update_snippets(snippet_source_id, name, snippets, url, user=None, python_ve
 
 def get_snippet_sources(snippet_source_ids=(), user=None, data_type=None):
     if data_type is not None and data_type != 'json':
-        raise exc.MySqlError('Error getting snippet sources. "data_type" must be json or empty')
+        raise exc.MySqlError('Error getting snippet sources. "data_type" must be json or None')
 
     mysql_connection = get_mysql_connection()
 
@@ -215,7 +215,7 @@ def toggle_snippet_sources(snippet_source_ids, set_value, user=None):
 
 def get_snippets_from_sources(snippet_source_ids=(), user=None, data_type=None):
     if data_type is not None and data_type != 'json':
-        raise exc.MySqlError('Error getting snippets. "data_type" must be json or empty')
+        raise exc.MySqlError('Error getting snippets. "data_type" must be json or None')
 
     if snippet_source_ids is None or len(snippet_source_ids) == 0:
         raise exc.MySqlError('Error getting snippets. At least 1 "snippet_source_id" is needed')
@@ -279,3 +279,65 @@ def toggle_snippets(snippet_source_id, snippet_local_ids, set_value, user=None):
     cursor.close()
 
     return sources_disabled
+
+
+# if all args are None, returns all snippets
+def search_snippets(description_search_text=None, code_search_text=None, disabled=None, user=None, data_type=None):
+    if data_type is not None and data_type != 'json':
+        raise exc.MySqlError('Error searching snippets. "data_type" must be json or None')
+
+    mysql_connection = get_mysql_connection()
+
+    cursor = mysql_connection.cursor()
+
+    sql = '''
+        SELECT 
+            s.snippet_source_id, 
+            s.snippet_local_id,
+            ss.name,
+            ss.url,
+            ss.manual_entry,
+            ss.last_updated,
+            ss.disabled as source_disabled,
+            s.description,
+            s.code,
+            s.disabled as snippet_disabled
+        FROM snippets AS s LEFT JOIN snippet_sources ss on ss.snippet_source_id = s.snippet_source_id 
+        WHERE 1=1 '''
+    sql_args = []
+
+    if description_search_text is not None:
+        sql += 'AND s.description LIKE %s '
+        sql_args.append('%' + description_search_text + '%')
+
+    if code_search_text is not None:
+        sql += 'AND s.code LIKE %s '
+        sql_args.append('%' + code_search_text + '%')
+
+    if code_search_text is not None:
+        sql += 'AND s.disabled = %s '
+        sql_args.append(disabled)
+
+    if user is not None:
+        sql += 'AND s.user = %s'
+        sql_args.append(user)
+
+    try:
+        cursor.execute(sql, sql_args)
+    except db_errors.Error as err:
+        print('search_snippets error.', err)
+        raise exc.MySqlError('Error searching snippets')
+
+    data = cursor.fetchall()
+
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    for row in data:
+        json_data.append(dict(zip(row_headers, row)))
+
+    cursor.close()
+
+    if data_type == 'json':
+        return json.dumps(json_data, default=str)
+
+    return json_data

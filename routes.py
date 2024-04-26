@@ -35,6 +35,10 @@ def define_routes(app):
     def repos():
         return render_template('manage_repos.html')
 
+    @app.route('/advanced_search')
+    def advanced_search():
+        return render_template('advanced_search.html')
+
     @app.route('/import_repos')
     def import_repos():
         return render_template('import_repos.html')
@@ -107,7 +111,7 @@ def define_routes(app):
             return 'job_id is required and must be int', 400
 
         try:
-            job_details_data = job_management.get_job_details_by_id(job_id, None)
+            job_details_data = job_management.get_job_details_by_id(job_id, None, 'json')
         except exc.MySqlError as e:
             return str(e), 400
 
@@ -116,8 +120,14 @@ def define_routes(app):
     @app.get('/test')
     def test():
 
-        job_management.insert_job_output(8, '''''', 3, 4)
-        return "aa", 200
+         # return str(job_management.insert_job_output(10, '''aaaaaa aaaaaaa aaaaaaaa''', 3, 4)), 200
+
+        return job_management.delete_job_outputs([10]), 200
+
+        # return snippet_management.search_snippets(None, 'blob', 0, None, 'json'), 200
+
+
+
 
     # import snippet from url sources
     @app.route('/import_snippets_url', methods=['GET', 'POST'])
@@ -333,3 +343,18 @@ def define_routes(app):
                     len(snippet_local_ids)) + ' snippets ' + toggle_action, 200
             else:
                 return str(rows) + ' snippets ' + toggle_action, 200
+
+    # search snippets
+    @app.route('/search_snippets', methods=['POST'])
+    def search_snippets():
+
+        description_search_text = request.form.get('description_search_text', None, str)
+        code_search_text = request.form.get('code_search_text', None, str)
+        disabled = request.form.get('disabled', None, int)
+
+        try:
+            snippets = snippet_management.search_snippets(description_search_text, code_search_text, disabled, None, 'json')
+        except exc.MySqlError as e:
+            return str(e), 400
+
+        return snippets, 200

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Search{% endblock %}
+{% block head %}
+    {{ super() }}
+
+    <style>
+        .card-view {
+            margin-bottom: 10px;
+        }
+
+    </style>
+{% endblock %}
+{% block content %}
+
+
+    <div class="card">
+        <h5 class="card-header">Advanced Search in code snippets</h5>
+        <div class="card-body">
+            <div class="mb-3 row">
+                <label for="search-description" class="col-sm-2 col-form-label">Snippet Description</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="search-description">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="search-code" class="col-sm-2 col-form-label">Snippet Code</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="search-code">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="disabled-check" class="col-sm-2 col-form-label">Disabled</label>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabled-check">
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary" id="search-button">Search</button>
+
+        </div>
+    </div>
+
+    <table
+            id="snippets-table"
+            data-height="750"
+{#            data-toolbar="#sources-table-toolbar"#}
+            data-toggle="table"
+            data-card-view="true"
+            data-click-to-select="false"
+            data-search="true"
+            data-search-accent-neutralise="true"
+            data-show-columns="true">
+        <thead>
+        <tr>
+            <th data-field="snippet_source_id" data-sortable="true" data-visible="false">Source ID</th>
+            <th data-field="snippet_local_id" data-sortable="true" data-visible="false">Snippet ID</th>
+            <th data-field="name" data-sortable="true">Item Name</th>
+            <th data-field="url">URL</th>
+            <th data-field="manual_entry" data-sortable="true" data-visible="false">Manual entry</th>
+            <th data-field="python_ver" data-sortable="true" data-visible="false">Python version</th>
+            <th data-field="last_updated" data-sortable="true">Last updated</th>
+            <th data-field="description">Snippet Description</th>
+            <th data-field="code" data-formatter="codeFormatter">Snippet code</th>
+            <th data-field="source_disabled" data-sortable="true" data-visible="false"> Source Disabled</th>
+            <th data-field="snippet_disabled" data-sortable="true" data-visible="false"> Snippet Disabled</th>
+            <th data-formatter="toggleSnippetsFormatter" data-events="toggleSnippetsEvents" data-align="center">Toggle snippet</th>
+        </tr>
+        </thead>
+    </table>
+
+
+{% endblock %}
+{% block script %}
+    <script src="/static/advanced_search.js"></script>
+{% endblock %}
