@@ -1,6 +1,24 @@
 import utility.job_management as job_management
 from datetime import datetime
-import json
+
+"""
+class Snippet:
+    pass
+
+
+class AbstractSynthesizer:
+    def __init__(self, job_id):
+        self.job_id = job_id
+
+    def add_line(self, snippet):
+        job_management.insert_job_output(self.job_id, snippet.text, snippet.src1, snipper.src2)
+
+
+class BWSyntesize(AbstractSynthesizer):
+    def synthesize(self):
+        self.add_line(snippet)
+"""
+
 
 def start_synthesis(job_id, text):
     #details = json.loads(job_management.get_job_details_by_id(job_id))
