@@ -30,7 +30,7 @@ def insert_new_job_and_return_id(synth_source, user=1):
 
 
 # if optional args are 'None' they will be ignored and not overwritten
-def edit_job_by_id(job_id: int, status, info=None, progress_steps=None, progress_percent: int = None, date_end=None,
+def edit_job_by_id(job_id: int, status, info=None, progress_percent: int = None, date_end=None,
                    user=1):
     if job_id is None:
         raise exc.MySqlError('"job_id" required to edit job.')
@@ -43,10 +43,6 @@ def edit_job_by_id(job_id: int, status, info=None, progress_steps=None, progress
     if info is not None:
         sql_fields_string = sql_fields_string + ', info=%s'
         sql_values.append(info)
-
-    if progress_steps is not None:
-        sql_fields_string = sql_fields_string + ', progress_steps=%s'
-        sql_values.append(progress_steps)
 
     if progress_percent is not None:
         sql_fields_string = sql_fields_string + ', progress_percent=%s'
@@ -137,7 +133,9 @@ def delete_jobs(job_ids, user=None):
     return jobs_deleted
 
 
-def get_job_details_by_id(job_id, user=None):
+def get_job_details_by_id(job_id, user=None, data_type=None):
+    if data_type is not None and data_type != 'json':
+        raise exc.MySqlError('Error getting job details sources. "data_type" must be json or None')
 
     if job_id is None:
         raise exc.MySqlError('job_id required to get job details.')
@@ -189,7 +187,10 @@ def get_job_details_by_id(job_id, user=None):
     for row in data:
         json_data['job_outputs'].append(dict(zip(row_headers, row)))
 
-    return json.dumps(json_data, default=str)
+    if data_type == 'json':
+        json_data = json.dumps(json_data, default=str)
+
+    return json_data
 
 
 def insert_job_output(job_id: int, code_output, snippet_source_id, snippet_local_id):
@@ -238,3 +239,30 @@ def get_latest_job_id(user=None):
     cursor.close()
 
     return data[0][0]
+
+
+def delete_job_outputs(job_ids, user=None):
+    mysql_connection = get_mysql_connection()
+
+    cursor = mysql_connection.cursor()
+
+    sql = '''DELETE FROM job_output 
+                    WHERE `job_id`IN (''' + ', '.join(['%s'] * len(job_ids)) + ')'
+    if user is not None:
+        sql += "AND user = " + user
+
+    try:
+        cursor.execute(sql, job_ids)
+    except db_errors.Error as err:
+        print('delete_job_outputs error.', err)
+        mysql_connection.rollback()
+        raise exc.MySqlError('Error deleting job outputs')
+    else:
+        print(cursor.rowcount, "job outputs deleted.")
+        mysql_connection.commit()
+
+    job_outputs_deleted = cursor.rowcount
+
+    cursor.close()
+
+    return job_outputs_deleted

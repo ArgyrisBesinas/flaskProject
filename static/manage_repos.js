@@ -123,6 +123,7 @@ function sourceDetailFormatter(index, row) {
           id="snippets-table-${row.snippet_source_id}"
           data-toggle="table"
           data-search="true"
+          data-show-columns="true"
           >
           <thead>
             <tr>
@@ -130,7 +131,7 @@ function sourceDetailFormatter(index, row) {
               <th data-field="snippet_local_id" data-visible="false">ID</th>
               <th data-field="description">Description</th>
               <th data-field="code" data-formatter="codeFormatter">Code</th>
-              <th data-field="disabled">Disabled</th>
+              <th data-field="disabled" data-visible="false">Disabled</th>
               <th data-formatter="toggleSnippetsFormatter" data-events="toggleSnippetsEvents" data-align="center">Toggle snippet</th>
             </tr>
             <tr class="no-data">
@@ -145,11 +146,19 @@ function sourceDetailFormatter(index, row) {
 function codeFormatter(value, row, index) {
 
     return `<pre><code>` + value + `</code></pre>`
-
 }
 
 function toggleSnippetsFormatter(value, row, index) {
-    return `<button type="button" class="btn btn-primary " id="toggle-snippets">Toggle</button>`
+    let checked = "checked";
+    if (row.disabled == 1) {
+        checked = "";
+    }
+    html = `
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="toggle-snippets" ` + checked + `>
+        </div>`
+
+    return html
 }
 
 window.toggleSnippetsEvents = {
@@ -166,49 +175,36 @@ window.toggleSnippetsEvents = {
             setValue = 0
         }
 
-        toggleSnippetsRequest(snippetSourceId, snippetLocalIds, setValue)
-    }
-}
+        let settings = {
+            "url": "/toggle_snippets",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: "snippet_source_id=" + snippetSourceId + "&set_value=" + setValue
+        };
 
-function toggleSnippetsRequest(snippetSourceId, snippetLocalIds, setValue) {
-
-    if (snippetSourceId == null || snippetSourceId == "" || snippetLocalIds.length == 0) {
-        return;
-    }
-
-    if (setValue != '0' && setValue != '1') {
-        return;
-    }
-
-    let settings = {
-        "url": "/toggle_snippets",
-        "method": "POST",
-        "timeout": 0,
-        "headers": {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: "snippet_source_id=" + snippetSourceId + "&set_value=" + setValue
-    };
-
-    snippetLocalIds.forEach((id) => {
-        settings.data = settings.data + "&snippet_local_ids=" + id
-    });
-
-    $.ajax(settings)
-        .fail(function (response) {
-            alert(response.responseText);
-        })
-        .done(function (response) {
-            // alert(response);
-            let settings = {
-                "url": "/get_snippets_from_source?snippet_source_id=" + snippetSourceId,
-                "method": "GET",
-                "timeout": 0,
-            };
-
-            $.ajax(settings)
-                .done(function (response) {
-                    $("#snippets-table-" + snippetSourceId).bootstrapTable('load', JSON.parse(response))
-                });
+        snippetLocalIds.forEach((id) => {
+            settings.data = settings.data + "&snippet_local_ids=" + id
         });
+
+        $.ajax(settings)
+            .fail(function (response) {
+                alert(response.responseText);
+            })
+            .done(function (response) {
+                // alert(response);
+                let settings = {
+                    "url": "/get_snippets_from_source?snippet_source_id=" + snippetSourceId,
+                    "method": "GET",
+                    "timeout": 0,
+                };
+
+                $.ajax(settings)
+                    .done(function (response) {
+                        $("#snippets-table-" + snippetSourceId).bootstrapTable('load', JSON.parse(response))
+                    });
+            });
+    }
 }

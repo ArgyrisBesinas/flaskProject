@@ -10,9 +10,12 @@
     <h5>Manage code snippet sources</h5>
 
     <div id="sources-table-toolbar">
-        <li class="btn btn-success">
-            <a class="nav-link" href="/import_repos" style="color: #EFEFEF;">+</a>
-        </li>
+
+        <div class="btn btn-success">
+            <a class="nav-link" href="/import_repos">
+                <i class="bi bi-plus-square"></i>
+            </a>
+        </div>
         <button id="enable-sources" class="btn btn-primary" disabled>
             <i class="fa"></i> Enable
         </button>
@@ -20,8 +23,13 @@
             <i class="fa"></i> Disable
         </button>
         <button id="delete-sources" class="btn btn-danger" disabled>
-            <i class="fa fa-trash"></i> X
+            <i class="bi bi-trash"></i>
         </button>
+        <div class="btn btn-outline-primary">
+            <a class="nav-link" href="/advanced_search" >
+                Advanced Search
+            </a>
+        </div>
     </div>
 
     <table
@@ -32,8 +40,6 @@
             data-click-to-select="false"
             data-search="true"
             data-search-accent-neutralise="true"
-            data-show-refresh="true"
-            data-show-toggle="true"
             data-show-columns="true"
             data-id-field="snippet_source_id"
             data-detail-view="true"

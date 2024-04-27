@@ -63,7 +63,6 @@ def init_db():
         "  `status` varchar(50) NOT NULL,"
         "  `synth_source` text NOT NULL,"
         "  `info` varchar(500),"
-        "  `progress_steps` varchar(50),"
         "  `progress_percent` int(11),"
         "  `date_start` timestamp DEFAULT CURRENT_TIMESTAMP,"
         "  `date_end` timestamp,"
