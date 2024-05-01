@@ -307,11 +307,11 @@ def search_snippets(description_search_text=None, code_search_text=None, disable
     sql_args = []
 
     if description_search_text is not None:
-        sql += 'AND s.description LIKE %s '
+        sql += 'AND LOWER(s.description) LIKE %s '
         sql_args.append('%' + description_search_text + '%')
 
     if code_search_text is not None:
-        sql += 'AND s.code LIKE %s '
+        sql += 'AND LOWER(s.code) LIKE %s COLLATE '
         sql_args.append('%' + code_search_text + '%')
 
     if code_search_text is not None:
