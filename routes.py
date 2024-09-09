@@ -8,12 +8,13 @@ from flask import render_template, request
 
 def define_routes(app):
     @app.route('/')
-    def hello_world():
+    def home():
         return render_template('home.html')
 
     @app.route('/new_job')
     def new_job():
-        return render_template('new_job.html')
+        print(list(synthesize.get_synth_methods_dict().keys()))
+        return render_template('new_job.html', synth_methods=list(synthesize.get_synth_methods_dict().keys()))
 
     @app.route('/list_jobs')
     def list_job():
@@ -27,7 +28,7 @@ def define_routes(app):
             try:
                 job_id = int(job_id)
             except ValueError:
-                return 'job_id must me int or "latest"', 400
+                return 'job_id must be int or "latest"', 400
 
         return render_template('job_details.html', job_id=job_id)
 
@@ -43,14 +44,25 @@ def define_routes(app):
     def import_repos():
         return render_template('import_repos.html')
 
+    # ---------------------------------------------------
+    # start of backend routes
+    # ---------------------------------------------------
+
     # init code synth and add job to db
     @app.route('/create_new_job', methods=['POST'])
     def create_new_job():
 
-        synth_source = request.form.get('synth_source')
+        synth_source = request.form.get('synth_source', None, str)
+        synth_method = request.args.get('synth_method', None, str)
+
+        if synth_source is None or synth_source == '':
+            return 'synth_source is missing', 400
+
+        if synth_method is None or synth_method == '':
+            return 'synth_method is missing', 400
 
         try:
-            job_id = synthesize.initiate_synth(synth_source)
+            job_id = synthesize.initiate_synth(synth_source, synth_method)
 
         except (exc.MySqlError, exc.SynthesisError) as e:
             return str(e), 400
@@ -120,14 +132,11 @@ def define_routes(app):
     @app.get('/test')
     def test():
 
-         # return str(job_management.insert_job_output(10, '''aaaaaa aaaaaaa aaaaaaaa''', 3, 4)), 200
+        # return str(job_management.insert_job_output(10, '''aaaaaa aaaaaaa aaaaaaaa''', 3, 4)), 200
 
         return job_management.delete_job_outputs([10]), 200
 
         # return snippet_management.search_snippets(None, 'blob', 0, None, 'json'), 200
-
-
-
 
     # import snippet from url sources
     @app.route('/import_snippets_url', methods=['GET', 'POST'])

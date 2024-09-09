@@ -1,17 +1,28 @@
 import utility.job_management as job_management
 import utility.custom_exceptions as exc
-from synthesis.runner import start_synthesis
+from synthesis.runner import start_synthesis_pysynth
 from datetime import datetime
 from threading import Thread
 
 
-def initiate_synth(synth_source):
+# add different synth functions here
+# key is the display name in front end
+def get_synth_methods_dict():
+    methods_dict = {
+        'PySynth': start_synthesis_pysynth,
+        # 'bar': bar
+    }
+    return methods_dict
+
+
+def initiate_synth(synth_source, synth_method):
     # 1. insert new job to db
     job_id = job_management.insert_new_job_and_return_id(synth_source)
     if job_id is None:
         raise exc.MySqlError('Error inserting new job')
     # 2. start synth in module
-    thread = Thread(target=start_synthesis, args=(job_id, synth_source))
+    start_synth_func = get_synth_methods_dict()[synth_method]
+    thread = Thread(target=start_synth_func, args=(job_id, synth_source))
     thread.start()
     #start_synthesis(job_id, synth_source)
     error = None

@@ -15,11 +15,11 @@ $(document).ready(function () {
             "data": {}
         };
 
-        if (description_search_text != null && description_search_text != "") {
+        if (description_search_text != null && description_search_text !== "") {
             settings.data.description_search_text = description_search_text;
         }
 
-        if (code_search_text != null && code_search_text != "") {
+        if (code_search_text != null && code_search_text !== "") {
             settings.data.code_search_text = code_search_text;
         }
 
