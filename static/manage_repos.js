@@ -8,7 +8,7 @@ $(document).ready(function () {
 
     $('#sources-table').on('click-row.bs.table', function (e, row, element, field) {
         if (field != "url" && field != "disabled") {
-            window.open("/repo_details/" + row.snippet_source_id, '_blank');
+            window.open("/repo_details/" + row.snippet_source_id, '_self');
         }
     })
 
@@ -95,7 +95,7 @@ function urlFormatter(value, row, index) {
         return "-"
     }
 
-    return `<a href=`+ value +`" target="_blank">` + value + `</a>`
+    return `<a href=`+ value +`" target="_self">` + value + `</a>`
 }
 
 function enabledFormatter(value, row, index) {
