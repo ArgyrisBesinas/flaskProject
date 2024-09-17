@@ -33,9 +33,9 @@ function reloadJobDetails() {
             let job_details_json = JSON.parse(response);
             $("#job-details-table").bootstrapTable('load', [job_details_json]);
 
-            let subtable_1 = "<table class='table table-striped'><tr><th>#</th></tr>";
-            let subtable_2 = "<table class='table table-striped'><tr><th>Code</th></tr>";
-            let subtable_3 = "<table class='table table-striped'><tr><th>Code snippet</th></tr>";
+            let subtable_1 = "<table class='table table-sm table-borderless'><tr><th>#</th></tr>";
+            let subtable_2 = "<table class='table table-sm table-borderless'><tr><th>Implementation</th></tr>";
+            let subtable_3 = "<table class='table table-sm table-borderless'><tr><th>Source</th></tr>";
 
             let row_nr = job_details_json.job_outputs.length;
             let full_code_text = "";
@@ -54,7 +54,7 @@ function reloadJobDetails() {
             subtable_2 += "</table>";
             subtable_3 += "</table>";
 
-            let job_output_table = "<tr><td>" + subtable_1 + "</td><td>" + subtable_2 + "</td><td>" + subtable_3 + "</td></tr>";
+            let job_output_table = "<tr><td>" + subtable_2 + "</td><td>" + subtable_3 + "</td></tr>";
 
             $("#job-output-table").html(job_output_table);
 

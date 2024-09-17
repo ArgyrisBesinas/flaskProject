@@ -95,9 +95,7 @@ class Code:
 
 
 
-
-
-def start_synthesis(job_id, text):
+def start_synthesis_pysynth(job_id, text):
     job_management.edit_job_by_id(job_id, "Running", info="Searching", progress_percent=0)
 
     # search snippets
@@ -111,7 +109,7 @@ def start_synthesis(job_id, text):
     original_remaining_words = len(result.words)
     job_management.edit_job_by_id(job_id, "Running", info="Fitting", progress_percent=0)
 
-    for _ in range(100):
+    for loop in range(100000):
         prev_remaining_words = len(result.words)
         # find best entry
         best_snippet = None
@@ -130,6 +128,11 @@ def start_synthesis(job_id, text):
         job_management.delete_job_outputs([job_id])
         for snippet in result.implementations:
             job_management.insert_job_output(job_id, snippet.code, *snippet.source)
+
+        # cancel if aborted by user
+        if job_management.get_job_details_by_id(job_id)["status"] == "Cancelling...":
+            job_management.edit_job_by_id(job_id, "Cancelled", info="Cancelled by user")
+            return
 
         # update progress
         job_management.edit_job_by_id(job_id, "Running", info="Fitting",
