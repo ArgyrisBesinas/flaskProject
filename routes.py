@@ -7,13 +7,13 @@ from flask import render_template, request
 
 
 def define_routes(app):
-    @app.route('/')
-    def home():
-        return render_template('home.html')
+    # @app.route('/')
+    # def home():
+    #     return render_template('home.html')
 
-    @app.route('/new_job')
+    @app.route('/')
     def new_job():
-        print(list(synthesize.get_synth_methods_dict().keys()))
+        # print(list(synthesize.get_synth_methods_dict().keys()))
         return render_template('new_job.html', synth_methods=list(synthesize.get_synth_methods_dict().keys()))
 
     @app.route('/list_jobs')
@@ -33,8 +33,16 @@ def define_routes(app):
         return render_template('job_details.html', job_id=job_id)
 
     @app.route('/manage_repos')
-    def repos():
+    def manage_repos():
         return render_template('manage_repos.html')
+
+    @app.route('/repo_details/<source_id>')
+    def repo_details(source_id):
+        try:
+            source_id = int(source_id)
+        except ValueError:
+            return 'source_id must be int', 400
+        return render_template('repo_details.html',  source_id=source_id)
 
     @app.route('/advanced_search')
     def advanced_search():
@@ -270,8 +278,14 @@ def define_routes(app):
     @app.route('/get_snippet_sources', methods=['GET'])
     def get_snippet_sources():
 
+        snippet_source_id_args = ()
+
+        snippet_source_ids = request.args.getlist('snippet_source_id')
+        if snippet_source_ids is not None and len(snippet_source_ids) > 0:
+            snippet_source_id_args = snippet_source_ids
+
         try:
-            sources = snippet_management.get_snippet_sources((), None, 'json')
+            sources = snippet_management.get_snippet_sources(snippet_source_id_args, None, 'json')
         except exc.MySqlError as e:
             return str(e), 400
 

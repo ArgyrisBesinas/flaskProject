@@ -14,7 +14,7 @@ def insert_new_job_and_return_id(synth_source, user=1):
            "VALUES (%s, %s, %s)")
 
     try:
-        cursor.execute(sql, ('starting', synth_source, user))
+        cursor.execute(sql, ('Starting', synth_source, user))
     except db_errors.Error as err:
         print('insert_new_job_and_return_id error.', err)
         mysql_connection.rollback()
@@ -30,8 +30,7 @@ def insert_new_job_and_return_id(synth_source, user=1):
 
 
 # if optional args are 'None' they will be ignored and not overwritten
-def edit_job_by_id(job_id: int, status, info=None, progress_percent: int = None, date_end=None,
-                   user=1):
+def edit_job_by_id(job_id: int, status, info=None, progress_percent: int = None, date_end=None, user=1):
     if job_id is None:
         raise exc.MySqlError('"job_id" required to edit job.')
     elif status is None:

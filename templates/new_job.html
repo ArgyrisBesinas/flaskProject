@@ -18,23 +18,23 @@
 
 
 
-    <div class="card">
-        <h5 class="card-header">Start Code synthesis</h5>
-        <div class="card-body">
+{#    <div class="card">#}
+{#        <h5 class="card-header">Start Code synthesis</h5>#}
+{#        <div class="card-body">#}
 
-            <label>Select synthesis method</label>
+{#            <label>Select synthesis method</label>#}
             <select id="select-synth-method" class="form-select" aria-label="Select synthesis method">
                 {% for synth_method in synth_methods %}
                     <option value="{{ synth_method }}">{{ synth_method }}</option>
                 {% endfor %}
             </select>
-            <label>Enter synthesis prompt</label>
-            <textarea class="form-control" id="synthesis-text" placeholder="enter prompt"
+{#            <label>Enter synthesis prompt</label>#}
+            <textarea class="form-control" id="synthesis-text" placeholder="enter synthesis prompt"
                       style="height: 200px"></textarea>
 
-            <button type="button" class="btn btn-primary" id="synthesis-text-submit">Implement</button>
-        </div>
-    </div>
+            <button type="button" class="btn btn-primary" id="synthesis-text-submit">Synthesize</button>
+{#        </div>#}
+{#    </div>#}
 
 {% endblock %}
 {% block script %}

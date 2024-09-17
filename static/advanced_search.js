@@ -1,5 +1,27 @@
 $(document).ready(function () {
 
+    // Execute a function when the user presses a key on the keyboard
+    $("#search-description").on("keypress", function(event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            $("#search-button").click();
+        }
+    });
+
+    // Execute a function when the user presses a key on the keyboard
+    $("#search-code").on("keypress", function(event) {
+        // If the user presses the "Enter" key on the keyboard
+        if (event.key === "Enter") {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            $("#search-button").click();
+        }
+    });
+
     $("#search-button").click(function () {
         let description_search_text = $("#search-description").val();
         let code_search_text = $("#search-code").val();
@@ -38,6 +60,15 @@ $(document).ready(function () {
     });
 
 });
+
+function sourceFormatter(value, row, index) {
+    var html = `<a href="/repo_details/`+ row.snippet_source_id +`" >` +
+                     row.name + `</a>`
+    if(row.url != null) {
+        html = html + " - " +  row.url
+    }
+    return  html
+}
 
 function codeFormatter(value, row, index) {
 

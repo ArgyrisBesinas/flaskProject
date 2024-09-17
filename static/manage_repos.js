@@ -6,6 +6,12 @@ $(document).ready(function () {
         })
     }
 
+    $('#sources-table').on('click-row.bs.table', function (e, row, element, field) {
+        if (field != "url" && field != "disabled") {
+            window.open("/repo_details/" + row.snippet_source_id, '_blank');
+        }
+    })
+
     $('#sources-table').on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table', function () {
         $('#enable-sources').prop('disabled', !$('#sources-table').bootstrapTable('getSelections').length)
         $('#disable-sources').prop('disabled', !$('#sources-table').bootstrapTable('getSelections').length)
@@ -52,18 +58,9 @@ $(document).ready(function () {
                 $('#delete-sources').prop('disabled', true)
             });
     })
+});
 
-    $('#disable-sources').click(function () {
-        toggleSources(1);
-    })
-
-    $('#enable-sources').click(function () {
-        toggleSources(0);
-    })
-
-    function toggleSources(setValue) {
-
-        let ids = getIdSelections();
+function toggleSources(ids, setValue) {
 
         if (ids.length == 0) {
             return
@@ -88,84 +85,37 @@ $(document).ready(function () {
                 alert(response.responseText);
             })
             .done(function (response) {
-                alert(response);
                 $('#sources-table').bootstrapTable('refresh')
-                $('#enable-sources').prop('disabled', true)
-                $('#disable-sources').prop('disabled', true)
-                $('#delete-sources').prop('disabled', true)
             });
     }
 
+function urlFormatter(value, row, index) {
 
-});
+    if (value == null) {
+        return "-"
+    }
 
-
-// add snippets table to details panel of source rows table
-function sourceDetailFormatter(index, row) {
-
-    let settings = {
-        "url": "/get_snippets_from_source?snippet_source_id=" + row.snippet_source_id,
-        "method": "GET",
-        "timeout": 0,
-    };
-
-    $.ajax(settings)
-        .fail(function (response) {
-            $("#snippets-table-" + row.snippet_source_id).bootstrapTable()
-            $("#snippets-table-no-data-" + row.snippet_source_id).html("Error loading snippets")
-        })
-        .done(function (response) {
-            $("#snippets-table-" + row.snippet_source_id).bootstrapTable({data: JSON.parse(response)})
-        });
-
-    let html = `
-        <table
-          id="snippets-table-${row.snippet_source_id}"
-          data-toggle="table"
-          data-search="true"
-          data-show-columns="true"
-          >
-          <thead>
-            <tr>
-              <th data-field="snippet_source_id" data-visible="false">source ID</th>
-              <th data-field="snippet_local_id" data-visible="false">ID</th>
-              <th data-field="description">Description</th>
-              <th data-field="code" data-formatter="codeFormatter">Code</th>
-              <th data-field="disabled" data-visible="false">Disabled</th>
-              <th data-formatter="toggleSnippetsFormatter" data-events="toggleSnippetsEvents" data-align="center">Toggle snippet</th>
-            </tr>
-            <tr class="no-data">
-                <td colspan="4" id="snippets-table-no-data-${row.snippet_source_id}">>No data available in table</td>
-            </tr>
-          </thead>
-        </table>`;
-
-    return html;
+    return `<a href=`+ value +`" target="_blank">` + value + `</a>`
 }
 
-function codeFormatter(value, row, index) {
+function enabledFormatter(value, row, index) {
 
-    return `<pre><code>` + value + `</code></pre>`
-}
-
-function toggleSnippetsFormatter(value, row, index) {
     let checked = "checked";
     if (row.disabled == 1) {
         checked = "";
     }
     html = `
         <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="toggle-snippets" ` + checked + `>
+          <input class="form-check-input" type="checkbox" style="margin-left: -4px;" role="switch" id="toggle-sources" ` + checked + `>
         </div>`
 
     return html
 }
 
-window.toggleSnippetsEvents = {
-    'click #toggle-snippets': function (e, value, row, index) {
+window.toggleEnabledEvents = {
+    'click #toggle-sources': function (e, value, row, index) {
 
         let snippetSourceId = row.snippet_source_id;
-        let snippetLocalIds = [row.snippet_local_id];
 
         let disabled_now = row.disabled;
         let setValue = '9'
@@ -175,36 +125,10 @@ window.toggleSnippetsEvents = {
             setValue = 0
         }
 
-        let settings = {
-            "url": "/toggle_snippets",
-            "method": "POST",
-            "timeout": 0,
-            "headers": {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: "snippet_source_id=" + snippetSourceId + "&set_value=" + setValue
-        };
+        $('#toggle-sources').prop('disabled', true)
 
-        snippetLocalIds.forEach((id) => {
-            settings.data = settings.data + "&snippet_local_ids=" + id
-        });
+        toggleSources([snippetSourceId], setValue);
 
-        $.ajax(settings)
-            .fail(function (response) {
-                alert(response.responseText);
-            })
-            .done(function (response) {
-                // alert(response);
-                let settings = {
-                    "url": "/get_snippets_from_source?snippet_source_id=" + snippetSourceId,
-                    "method": "GET",
-                    "timeout": 0,
-                };
-
-                $.ajax(settings)
-                    .done(function (response) {
-                        $("#snippets-table-" + snippetSourceId).bootstrapTable('load', JSON.parse(response))
-                    });
-            });
     }
 }
+

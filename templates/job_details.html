@@ -4,6 +4,12 @@
 {% block head %}
     {{ super() }}
 
+     <style>
+        pre {
+            margin-bottom: 0px;
+        }
+    </style>
+
 {% endblock %}
 {% block content %}
 
@@ -16,8 +22,8 @@
         <thead>
         <tr>
             <th data-field="job_id" data-visible="false">ID</th>
-            <th data-field="status">Status</th>
-            <th data-field="progress_percent">Progress</th>
+            <th data-field="status" data-formatter="statusFormatter" data-events="statusEvents">Status</th>
+            <th data-field="progress_percent" data-formatter="progressFormatter">Progress</th>
             <th data-field="synth_source">Task</th>
             <th data-field="info">Info</th>
             <th data-field="date_start">Submitted</th>

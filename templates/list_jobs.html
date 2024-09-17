@@ -31,7 +31,7 @@
             data-search-accent-neutralise="true"
             data-show-refresh="true"
             data-show-toggle="true"
-            data-show-columns="true"
+{#            data-show-columns="true"#}
             data-id-field="job_id"
             data-url="/get_jobs">
         <thead>
@@ -42,8 +42,8 @@
             <th data-field="date_start" data-sortable="true">Submitted</th>
             <th data-field="date_end" data-sortable="true">Finished</th>
             <th data-field="info">Info</th>
-            <th data-field="status" data-sortable="true">Status</th>
-            <th data-formatter="jobActionsFormatter" data-events="jobActionsEvents" data-align="center">Actions</th>
+            <th data-field="status" data-sortable="true" data-formatter="statusFormatter" data-events="statusEvents">Status</th>
+{#            <th data-formatter="jobActionsFormatter" data-events="jobActionsEvents" data-align="center">Actions</th>#}
         </tr>
         </thead>
     </table>
