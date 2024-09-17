@@ -1,144 +1,181 @@
 $(document).ready(function () {
 
-    reloadJobDetails();
+    $('#delete-sources').click(function () {
 
-    let reloadId = setInterval(function () {
-        let details = $("#job-details-table").bootstrapTable('getData');
+        let ids = [$(this).attr("custom-source-id")]
 
-        if (details[0].status == "Cancelled" || details[0].status == "Completed") {
-            clearInterval(reloadId);
-            return;
-        }
-
-        reloadJobDetails();
-    }, 5000);
-
-
-});
-
-function reloadJobDetails() {
-    let job_id = $("#job-details-table").attr("custom-job-id")
-
-    let settings = {
-        "url": "/get_job_details?job_id=" + job_id,
-        "method": "GET",
-        "timeout": 0,
-    };
-
-    $.ajax(settings)
-        .fail(function (response) {
-            alert(response.responseText);
-        })
-        .done(function (response) {
-            let job_details_json = JSON.parse(response);
-            if (job_details_json.progress_percent == null) {
-                 $("#job-details-table").bootstrapTable('hideColumn', 'progress_percent')
-            }
-
-            $("#job-details-table").bootstrapTable('load', [job_details_json]);
-
-            // let subtable_1 = "<table class='table table-striped'><tr><th>#</th></tr>";
-            let subtable_2 = "<table class='table table-striped'><tr><th>Code</th></tr>";
-            let subtable_3 = "<table class='table table-striped'><tr><th style='text-align:center'>Source</th></tr>";
-
-            let row_nr = job_details_json.job_outputs.length;
-            let full_code_text = "";
-
-            job_details_json.job_outputs.forEach(function (item, index) {
-                // subtable_1 += "<tr id='index_row_" + index + "'><td>" + (index + 1) + "</td></tr>";
-
-                subtable_2 += "<tr class='custom_code_row' id='code_row_" + index + "'><td><pre><code>" + item.code + "</code></pre></td></tr>";
-
-                //  item.snippet_source_id + ", " + item.snippet_local_id
-                subtable_3 += "<tr id='snippet_row_" + index + "'><td style='text-align:center'>" +
-                    `<div class="btn btn-primary">
-                        <a class="nav-link" href="/repo_details/`+ item.snippet_source_id +`" >
-                            <i class="bi bi-eye"></i>
-                        </a>
-                    </div>` +
-                "</td></tr>";
-
-                full_code_text += item.code + "\n";
-            })
-
-            // subtable_1 += "</table>";
-            subtable_2 += "</table>";
-            subtable_3 += "</table>";
-
-            // let job_output_table = "<tr><td>" + subtable_1 + "</td><td>" + subtable_2 + "</td><td>" + subtable_3 + "</td></tr>";
-            let job_output_table = "<tr><td>" + subtable_2 + "</td><td>" + subtable_3 + "</td></tr>";
-
-            $("#job-output-table").html(job_output_table);
-
-            for (let i = 0; i < row_nr; i++) {
-                let row_height_1 = $("#code_row_" + i).height();
-                let row_height_2 = $("#snippet_row_" + i).height();
-
-                if (row_height_1 > row_height_2) {
-                    $("#code_row_" + i).height(row_height_1);
-                    $("#snippet_row_" + i).height(row_height_1);
-                }
-                else {
-                    $("#code_row_" + i).height(row_height_2);
-                    $("#snippet_row_" + i).height(row_height_2);
-                }
-            }
-
-            $('#copy-code').click(function () {
-                navigator.clipboard.writeText(full_code_text);
-            })
-
-        });
-}
-
-function statusFormatter(value, row, index) {
-
-    let html = value;
-
-    if (value != "Cancelling..." && value != "Cancelled" && value != "Completed") {
-        html += `  <button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
-    }
-
-    return html;
-}
-
-window.statusEvents = {
-    'click #cancel-job': function (e, value, row, index) {
-
-        $('#cancel-job').prop( "disabled", true );;
-
-        let job_id = row.job_id;
-
-        if (job_id == null) {
+        if (!confirm('Are you sure you want to delete this source?')) {
             return;
         }
 
         let settings = {
-            "url": "/cancel_job",
+            "url": "/delete_snippet_sources",
             "method": "POST",
             "timeout": 0,
             "headers": {
                 "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: "job_id=" + job_id
+            }
         };
+
+        let data = ""
+        ids.forEach((id) => {
+
+            if (data == "") {
+                data = data + "snippet_source_ids=" + id
+            } else {
+                data = data + "&snippet_source_ids=" + id
+            }
+        });
+
+        settings.data = data;
 
         $.ajax(settings)
             .fail(function (response) {
                 alert(response.responseText);
             })
             .done(function (response) {
-                // $('#job-details-table').bootstrapTable('refresh')
-                reloadJobDetails();
+                // alert(response);
+                window.open("/manage_repos", '_self');
             });
+    })
+
+});
+
+function toggleSources(ids, setValue) {
+
+        if (ids.length == 0) {
+            return
+        }
+
+        let settings = {
+            "url": "/toggle_snippet_sources",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: "set_value=" + setValue
+        };
+
+        ids.forEach((id) => {
+            settings.data = settings.data + "&snippet_source_ids=" + id
+        });
+
+        $.ajax(settings)
+            .fail(function (response) {
+                alert(response.responseText);
+            })
+            .done(function (response) {
+                $('#source-details-table').bootstrapTable('refresh')
+            });
+    }
+
+function urlFormatter(value, row, index) {
+
+    if (value == null) {
+        return "-"
+    }
+
+    return `<a href=`+ value +`" target="_blank">` + value + `</a>`
+}
+
+function enabledFormatter(value, row, index) {
+
+    let checked = "checked";
+    if (row.disabled == 1) {
+        checked = "";
+    }
+    html = `
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="toggle-sources" ` + checked + `>
+        </div>`
+
+    return html
+}
+
+window.toggleEnabledEvents = {
+    'click #toggle-sources': function (e, value, row, index) {
+
+        let snippetSourceId = row.snippet_source_id;
+
+        let disabled_now = row.disabled;
+        let setValue = '9'
+        if (disabled_now == 0) {
+            setValue = '1'
+        } else if (disabled_now == 1) {
+            setValue = 0
+        }
+
+        $('#toggle-sources').prop('disabled', true)
+
+        toggleSources([snippetSourceId], setValue);
+
     }
 }
 
-function progressFormatter(value, row, index) {
 
-     let html = `<div class="progress" role="progressbar" aria-valuenow="`+value+`" aria-valuemin="0" aria-valuemax="100">
-                          <div class="progress-bar" style="width: `+value+`%"></div>
-                        </div>`
 
-    return html;
+
+
+
+function codeFormatter(value, row, index) {
+
+    return `<pre><code>` + value + `</code></pre>`
+}
+
+function toggleSnippetsFormatter(value, row, index) {
+    let checked = "checked";
+    if (row.disabled == 1) {
+        checked = "";
+    }
+    html = `
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="toggle-snippets" ` + checked + `>
+        </div>`
+
+    return html
+}
+
+window.toggleSnippetsEvents = {
+    'click #toggle-snippets': function (e, value, row, index) {
+
+        let snippetSourceId = row.snippet_source_id;
+        let snippetLocalIds = [row.snippet_local_id];
+
+        let disabled_now = row.disabled;
+        let setValue = '9'
+        if (disabled_now == 0) {
+            setValue = '1'
+        } else if (disabled_now == 1) {
+            setValue = 0
+        }
+
+
+        let settings = {
+            "url": "/toggle_snippets",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: "snippet_source_id=" + snippetSourceId + "&set_value=" + setValue
+        };
+
+        snippetLocalIds.forEach((id) => {
+            settings.data = settings.data + "&snippet_local_ids=" + id
+        });
+
+        $.ajax(settings)
+            .fail(function (response) {
+                alert(response.responseText);
+            })
+            .done(function (response) {
+                // alert(response);
+                $('#snippets-table').bootstrapTable('updateCell', {
+                    index: index,
+                    field: 'disabled',
+                    value: setValue
+                })
+            });
+    }
 }
