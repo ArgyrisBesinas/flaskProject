@@ -7,7 +7,7 @@ $(document).ready(function () {
     }
 
     $('#jobs-table').on('click-row.bs.table', function (e, row, $element, field) {
-        window.open("/job_details/" + row.job_id, '_blank');
+        window.open("/job_details/" + row.job_id, '_self');
     })
 
     $('#jobs-table').on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table', function () {
@@ -59,8 +59,8 @@ function statusFormatter(value, row, index) {
 
     let html = value;
 
-    if (row.status != "Cancelling..." && row.status != "Cancelled" && row.status != "Completed") {
-        html += `  <button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
+    if (row.status == "Fitting" || row.status == "Running") {
+        html = `<button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
     }
 
     return html;
@@ -74,7 +74,7 @@ function statusFormatter(value, row, index) {
 //         html += `<button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
 //     }
 //
-//     html += `<a href="/job_details/` + row.job_id + `" target="_blank" + row.job_id class="btn btn-primary"><i class="bi bi-eye-fill"></i></a>`
+//     html += `<a href="/job_details/` + row.job_id + `" target="_self" + row.job_id class="btn btn-primary"><i class="bi bi-eye-fill"></i></a>`
 //     return html;
 // }
 

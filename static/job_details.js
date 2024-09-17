@@ -95,8 +95,8 @@ function statusFormatter(value, row, index) {
 
     let html = value;
 
-    if (value != "Cancelling..." && value != "Cancelled" && value != "Completed") {
-        html += `  <button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
+    if (value == "Fitting" || value == "Running") {
+        html = `<button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
     }
 
     return html;

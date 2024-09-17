@@ -34,11 +34,15 @@ def edit_job_by_id(job_id: int, status, info=None, progress_percent: int = None,
                    user=1):
     if job_id is None:
         raise exc.MySqlError('"job_id" required to edit job.')
-    elif status is None:
-        raise exc.MySqlError('"status" required to edit job.')
+    # elif status is None:
+    #     raise exc.MySqlError('"status" required to edit job.')
 
-    sql_fields_string = 'status=%s, user=%s'
-    sql_values = [status, user]
+    sql_fields_string = 'user=%s'
+    sql_values = [user]
+
+    if status is not None:
+        sql_fields_string = sql_fields_string + ', status=%s'
+        sql_values.append(status)
 
     if info is not None:
         sql_fields_string = sql_fields_string + ', info=%s'

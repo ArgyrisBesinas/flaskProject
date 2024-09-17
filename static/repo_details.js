@@ -76,7 +76,7 @@ function urlFormatter(value, row, index) {
         return "-"
     }
 
-    return `<a href=`+ value +`" target="_blank">` + value + `</a>`
+    return `<a href=`+ value +`" target="_self">` + value + `</a>`
 }
 
 function enabledFormatter(value, row, index) {
