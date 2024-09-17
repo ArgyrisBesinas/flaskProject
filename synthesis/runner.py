@@ -94,10 +94,7 @@ class Code:
         self.implementations = [self.implementations[original[pos]] for pos in range(n)]
 
 
-
-
-
-def start_synthesis(job_id, text):
+def start_synthesis_pysynth(job_id, text):
     job_management.edit_job_by_id(job_id, "Running", info="Searching", progress_percent=0)
 
     # search snippets
@@ -109,7 +106,7 @@ def start_synthesis(job_id, text):
                                  (entry["snippet_source_id"], entry["snippet_local_id"])))
 
     original_remaining_words = len(result.words)
-    job_management.edit_job_by_id(job_id, "Running", info="Fitting", progress_percent=0)
+    job_management.edit_job_by_id(job_id, None, info="Fitting", progress_percent=0)
 
     for _ in range(100):
         prev_remaining_words = len(result.words)
@@ -122,7 +119,7 @@ def start_synthesis(job_id, text):
                 best_snippet = snippet
         # add best entry to solution
         if best_snippet is not None:
-            #best_snippet.print()
+            # best_snippet.print()
             result.add(best_snippet)
 
         result.sort()
@@ -131,9 +128,14 @@ def start_synthesis(job_id, text):
         for snippet in result.implementations:
             job_management.insert_job_output(job_id, snippet.code, *snippet.source)
 
+        # cancel if required
+        if job_management.get_job_details_by_id(job_id)["status"] == "Cancelling...":
+            job_management.edit_job_by_id(job_id, "Cancelled", info="Cancelled by user")
+            return
+
         # update progress
         job_management.edit_job_by_id(job_id, "Running", info="Fitting",
-                                      progress_percent=100-int(len(result.words)*100/original_remaining_words))
+                                      progress_percent=100 - int(len(result.words) * 100 / original_remaining_words))
         if len(result.words) == prev_remaining_words:
             break
 

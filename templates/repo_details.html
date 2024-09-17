@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Search{% endblock %}
+{% block head %}
+    {{ super() }}
+
+    <style>
+        #job-details-table {
+            margin-bottom: 10px;
+        }
+
+    </style>
+{% endblock %}
+{% block content %}
+
+    <table
+        id="source-details-table"
+        data-toggle="table"
+        data-card-view="true"
+        data-url="/get_snippet_sources?snippet_source_id={{ source_id }}"
+    >
+        <thead>
+        <tr>
+            <th data-field="snippet_source_id" data-visible="false">ID</th>
+            <th data-field="name" data-sortable="true">Name</th>
+            <th data-field="url"  data-formatter="urlFormatter">URL</th>
+            <th data-field="manual_entry" data-sortable="true" data-visible="false">Manual entry</th>
+            <th data-field="python_ver" data-sortable="true" data-visible="false">Python version</th>
+            <th data-field="last_updated" data-sortable="true" data-visible="false">Last updated</th>
+            <th data-field="disabled" data-formatter="enabledFormatter" data-events="toggleEnabledEvents" data-align="center">Enabled</th>
+        </tr>
+        </thead>
+    </table>
+
+    <div id="snippets-table-toolbar">
+        <button id="delete-sources" class="btn btn-danger" custom-source-id="{{ source_id }}">
+            <i class="bi bi-trash"></i> Delete source
+        </button>
+    </div>
+
+    <table
+            id="snippets-table"
+            data-toolbar="#snippets-table-toolbar"
+            data-height="750"
+            data-toggle="table"
+            data-card-view="true"
+            data-click-to-select="false"
+            data-search="true"
+            data-search-accent-neutralise="true"
+{#            data-show-columns="true"#}
+            data-url="/get_snippets_from_source?snippet_source_id={{ source_id }}"
+    >
+        <thead>
+        <tr>
+            <th data-field="snippet_source_id" data-visible="false">source ID</th>
+              <th data-field="snippet_local_id" data-visible="false">ID</th>
+              <th data-field="description">Description</th>
+              <th data-field="code" data-formatter="codeFormatter">Code</th>
+              <th data-field="disabled" data-visible="false">Disabled</th>
+              <th data-formatter="toggleSnippetsFormatter" data-events="toggleSnippetsEvents" data-align="center">Enabled</th>
+        </tr>
+        </thead>
+    </table>
+
+
+{% endblock %}
+{% block script %}
+    <script src="/static/repo_details.js"></script>
+{% endblock %}

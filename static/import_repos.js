@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    // const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    // const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
 
     $("#import-url-submit").click(function () {
@@ -19,17 +19,22 @@ $(document).ready(function () {
             return;
         }
 
-        if ($("#github-url-check").length > 0 && $("#github-url-check")[0].checked) {
-            source = "github"
-            if (!url.includes("https://github.com/") || !url.includes("/blob/")) {
-                alert("Invalid GitHub url");
-                return;
-            }
-        } else if ($("#github-url-check").length > 0 && !$("#github-url-check")[0].checked) {
-            source = "raw";
-        } else {
-            return;
-        }
+        source = "raw";
+         if (url.includes("https://github.com/") && url.includes("/blob/")) {
+                source = "github"
+         }
+
+        // if ($("#github-url-check").length > 0 && $("#github-url-check")[0].checked) {
+        //     source = "github"
+        //     if (!url.includes("https://github.com/") || !url.includes("/blob/")) {
+        //         alert("Invalid GitHub url");
+        //         return;
+        //     }
+        // } else if ($("#github-url-check").length > 0 && !$("#github-url-check")[0].checked) {
+        //     source = "raw";
+        // } else {
+        //     return;
+        // }
 
         let settings = {
             "url": "/import_snippets_url",

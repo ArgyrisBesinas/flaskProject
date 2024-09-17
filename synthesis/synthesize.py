@@ -9,7 +9,7 @@ from threading import Thread
 # key is the display name in front end
 def get_synth_methods_dict():
     methods_dict = {
-        'PySynth': start_synthesis_pysynth,
+        'PySynth synthesizer': start_synthesis_pysynth,
         # 'bar': bar
     }
     return methods_dict
@@ -22,9 +22,9 @@ def initiate_synth(synth_source, synth_method):
         raise exc.MySqlError('Error inserting new job')
     # 2. start synth in module
     start_synth_func = get_synth_methods_dict()[synth_method]
-    thread = Thread(target=start_synth_func, args=(job_id, synth_source))
+    thread = Thread(target=start_synth_func, name=job_id, args=(job_id, synth_source))
     thread.start()
-    #start_synthesis(job_id, synth_source)
+    # start_synthesis(job_id, synth_source)
     error = None
 
     if error is not None:

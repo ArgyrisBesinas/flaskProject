@@ -14,7 +14,7 @@ def insert_new_job_and_return_id(synth_source, user=1):
            "VALUES (%s, %s, %s)")
 
     try:
-        cursor.execute(sql, ('starting', synth_source, user))
+        cursor.execute(sql, ('Starting', synth_source, user))
     except db_errors.Error as err:
         print('insert_new_job_and_return_id error.', err)
         mysql_connection.rollback()

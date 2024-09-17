@@ -6,6 +6,10 @@ $(document).ready(function () {
         })
     }
 
+    $('#jobs-table').on('click-row.bs.table', function (e, row, $element, field) {
+        window.open("/job_details/" + row.job_id, '_blank');
+    })
+
     $('#jobs-table').on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table', function () {
         $('#delete-jobs').prop('disabled', !$('#jobs-table').bootstrapTable('getSelections').length)
     })
@@ -51,20 +55,33 @@ $(document).ready(function () {
 
 });
 
-function jobActionsFormatter(value, row, index) {
+function statusFormatter(value, row, index) {
 
-    let html = "";
+    let html = value;
 
     if (row.status != "Cancelling..." && row.status != "Cancelled" && row.status != "Completed") {
-        html += `<button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
+        html += `  <button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
     }
 
-    html += `<a href="/job_details/` + row.job_id + `" target="_blank" + row.job_id class="btn btn-primary">Details</a>`
     return html;
 }
 
-window.jobActionsEvents = {
+// function jobActionsFormatter(value, row, index) {
+//
+//     let html = "";
+//
+//     if (row.status != "Cancelling..." && row.status != "Cancelled" && row.status != "Completed") {
+//         html += `<button type="button" class="btn btn-danger" id="cancel-job">Cancel</button>`
+//     }
+//
+//     html += `<a href="/job_details/` + row.job_id + `" target="_blank" + row.job_id class="btn btn-primary"><i class="bi bi-eye-fill"></i></a>`
+//     return html;
+// }
+
+window.statusEvents = {
     'click #cancel-job': function (e, value, row, index) {
+
+        $('#cancel-job').prop( "disabled", true );;
 
         let job_id = row.job_id;
 

@@ -311,12 +311,12 @@ def search_snippets(description_search_text=None, code_search_text=None, disable
         sql_args.append('%' + description_search_text + '%')
 
     if code_search_text is not None:
-        sql += 'AND LOWER(s.code) LIKE %s COLLATE '
+        sql += 'AND LOWER(s.code) LIKE %s '
         sql_args.append('%' + code_search_text + '%')
 
-    if code_search_text is not None:
-        sql += 'AND s.disabled = %s '
-        sql_args.append(disabled)
+    if disabled != 1:
+        sql += 'AND s.disabled = %s'
+        sql_args.append(0)
 
     if user is not None:
         sql += 'AND s.user = %s'

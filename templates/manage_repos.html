@@ -13,15 +13,9 @@
 
         <div class="btn btn-success">
             <a class="nav-link" href="/import_repos">
-                <i class="bi bi-plus-square"></i>
+                <i class="bi bi-plus-square"></i> Import
             </a>
         </div>
-        <button id="enable-sources" class="btn btn-primary" disabled>
-            <i class="fa"></i> Enable
-        </button>
-        <button id="disable-sources" class="btn btn-primary" disabled>
-            <i class="fa"></i> Disable
-        </button>
         <button id="delete-sources" class="btn btn-danger" disabled>
             <i class="bi bi-trash"></i>
         </button>
@@ -40,21 +34,22 @@
             data-click-to-select="false"
             data-search="true"
             data-search-accent-neutralise="true"
-            data-show-columns="true"
+{#            data-show-columns="true"#}
             data-id-field="snippet_source_id"
-            data-detail-view="true"
-            data-detail-formatter="sourceDetailFormatter"
+{#            data-detail-view="true"#}
+{#            data-detail-formatter="sourceDetailFormatter"#}
             data-url="/get_snippet_sources">
         <thead>
         <tr>
             <th data-field="state" data-checkbox="true"></th>
             <th data-field="snippet_source_id" data-sortable="true" data-visible="false">ID</th>
             <th data-field="name" data-sortable="true">Item Name</th>
-            <th data-field="url">URL</th>
+            <th data-field="url" data-formatter="urlFormatter">URL</th>
             <th data-field="manual_entry" data-sortable="true" data-visible="false">Manual entry</th>
             <th data-field="python_ver" data-sortable="true" data-visible="false">Python version</th>
             <th data-field="last_updated" data-sortable="true">Last updated</th>
-            <th data-field="disabled" data-sortable="true" data-visible="false">Disabled</th>
+            <th data-field="disabled" data-formatter="enabledFormatter" data-events="toggleEnabledEvents" data-align="center">Enabled</th>
+{#            <th data-field="details" data-formatter="detailsFormatter" data-align="center">Details</th>#}
         </tr>
         </thead>
     </table>
