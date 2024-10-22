@@ -3,11 +3,11 @@ $(document).ready(function () {
     // const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     // const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
-
     $("#import-url-submit").click(function () {
         let name = $("#import-url-name").val();
         let url = $("#import-url").val();
         let source = ""
+        let licence = $("#import-url-licence").val();
 
         if (name == undefined || name == "") {
             alert("Please fill source name");
@@ -16,6 +16,11 @@ $(document).ready(function () {
 
         if (url == undefined || url == "") {
             alert("Please fill url");
+            return;
+        }
+
+        if (licence == null || licence == "") {
+            alert("Please select licence");
             return;
         }
 
@@ -46,7 +51,8 @@ $(document).ready(function () {
             "data": {
                 "name": name,
                 "url": url,
-                "source": source
+                "source": source,
+                "licence": licence
             }
         };
 
@@ -55,8 +61,7 @@ $(document).ready(function () {
                 alert(response.responseText);
             })
             .done(function (response) {
-                alert(response.responseText);
-                $('#sources-table').bootstrapTable('refresh')
+                alert(response);
             });
 
 
@@ -64,9 +69,15 @@ $(document).ready(function () {
 
     $("#import-file-submit").click(function () {
         let name = $("#import-file-name").val();
+        let licence = $("#import-file-licence").val();
 
         if (name == undefined || name == "") {
             alert("Please fill source name");
+            return;
+        }
+
+        if (licence == null || licence == "") {
+            alert("Please select licence");
             return;
         }
 
@@ -75,7 +86,7 @@ $(document).ready(function () {
             let reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (evt) {
-                submitJupyterText(name, evt.target.result);
+                submitJupyterText(name, evt.target.result, licence);
             }
             reader.onerror = function (evt) {
                 alert("Error reading file");
@@ -88,23 +99,28 @@ $(document).ready(function () {
 
     $("#import-text-submit").click(function () {
         let name = $("#import-text-name").val();
+        let licence = $("#import-text-licence").val();
+        let text = $("#import-text").val();
 
         if (name == undefined || name == "") {
             alert("Please fill source name");
             return;
         }
 
-        let text = $("#import-text").val();
+        if (licence == null || licence == "") {
+            alert("Please select licence");
+            return;
+        }
 
         if (text == undefined || text == "") {
             alert("Please enter jupyter json");
             return;
         }
 
-        submitJupyterText(name, text);
+        submitJupyterText(name, text, licence);
     });
 
-    function submitJupyterText(name, text) {
+    function submitJupyterText(name, text, licence) {
 
         try {
             JSON.parse(text);
@@ -114,7 +130,7 @@ $(document).ready(function () {
         }
 
         let settings = {
-            "url": "/import_snippets_text?name=" + name,
+            "url": "/import_snippets_text?name=" + name + "&licence=" + licence,
             "method": "POST",
             "timeout": 0,
             "headers": {
@@ -129,7 +145,6 @@ $(document).ready(function () {
             })
             .done(function (response) {
                 alert(response);
-                $('#sources-table').bootstrapTable('refresh')
             });
     }
 });

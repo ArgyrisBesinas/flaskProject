@@ -4,17 +4,17 @@ import utility.custom_exceptions as exc
 import json
 
 
-def insert_new_job_and_return_id(synth_source, user=1):
+def insert_new_job_and_return_id(synth_source, licence, user=1):
     mysql_connection = get_mysql_connection()
 
     cursor = mysql_connection.cursor()
 
     sql = ("INSERT INTO jobs "
-           "(`status`, `synth_source`, `user`) "
-           "VALUES (%s, %s, %s)")
+           "(`status`, `synth_source`, `user`, `licence`) "
+           "VALUES (%s, %s, %s, %s)")
 
     try:
-        cursor.execute(sql, ('Starting', synth_source, user))
+        cursor.execute(sql, ('Starting', synth_source, user, licence))
     except db_errors.Error as err:
         print('insert_new_job_and_return_id error.', err)
         mysql_connection.rollback()

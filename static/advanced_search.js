@@ -25,7 +25,7 @@ $(document).ready(function () {
     $("#search-button").click(function () {
         let description_search_text = $("#search-description").val();
         let code_search_text = $("#search-code").val();
-        let disabled = $("#disabled-check").prop('checked');
+        let include_disabled = $("#disabled-check").prop('checked');
 
         let settings = {
             "url": "/search_snippets",
@@ -45,8 +45,8 @@ $(document).ready(function () {
             settings.data.code_search_text = code_search_text;
         }
 
-        if (disabled) {
-            settings.data.disabled = 1;
+        if (include_disabled) {
+            settings.data.include_disabled = 1;
         }
 
         $.ajax(settings)

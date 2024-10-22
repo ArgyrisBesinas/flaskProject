@@ -8,7 +8,7 @@
         #synthesis-text {
             margin-bottom: 10px;
         }
-         #select-synth-method {
+         #select-synth-method, #select-synth-licence {
             margin-bottom: 10px;
         }
     </style>
@@ -24,9 +24,16 @@
 
 {#            <label>Select synthesis method</label>#}
             <select id="select-synth-method" class="form-select" aria-label="Select synthesis method">
+                <option value="" selected disabled hidden="">Select synthesis method</option>
                 {% for synth_method in synth_methods %}
                     <option value="{{ synth_method }}">{{ synth_method }}</option>
                 {% endfor %}
+            </select>
+             <select id="select-synth-licence" class="form-select" aria-label="Select licence">
+                <option value="" selected disabled hidden="">Select licence</option>
+            {% for licence in licences %}
+                <option value="{{ licence }}">{{ licence }}</option>
+            {% endfor %}
             </select>
 {#            <label>Enter synthesis prompt</label>#}
             <textarea class="form-control" id="synthesis-text" placeholder="enter synthesis prompt"

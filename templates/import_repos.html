@@ -13,7 +13,7 @@
             margin-top: 10px;
         }
 
-        #import-url-name, #import-file-name, #import-text-name {
+        #import-url-name,  #import-url, #import-file-name, #import-file, #import-text-name, #import-text {
             margin-bottom: 12px;
         }
     </style>
@@ -42,14 +42,12 @@
                 <input type="text" class="form-control" id="import-url-name" placeholder="Source name">
 {#                <label for="import-url" class="form-label">Enter url:</label>#}
                 <input type="text" class="form-control" id="import-url" placeholder="Url to notebook">
-{#                <div class="form-check">#}
-{#                    <input class="form-check-input" type="checkbox" id="github-url-check" checked>#}
-{#                    <label class="form-check-label" for="github-url-check" data-bs-toggle="tooltip"#}
-{#                           data-bs-placement="right"#}
-{#                           data-bs-title="Check true if url is like 'https://github.com/*/blob/*'">#}
-{#                        Github url#}
-{#                    </label>#}
-{#                </div>#}
+                <select id="import-url-licence" class="form-select" aria-label="Select licence">
+                    <option value="" selected disabled hidden="">Select licence</option>
+                {% for licence in licences %}
+                    <option value="{{ licence }}">{{ licence }}</option>
+                {% endfor %}
+                </select>
 
                 <button type="button" class="btn btn-primary" id="import-url-submit">Import</button>
             </div>
@@ -61,6 +59,12 @@
                 <input type="text" class="form-control" id="import-file-name" placeholder="Source name">
 {#                <label for="import-file" class="form-label">Select Jupyter file:</label>#}
                 <input class="form-control" type="file" id="import-file">
+                <select id="import-file-licence" class="form-select" aria-label="Select licence">
+                    <option value="" selected disabled hidden="">Select licence</option>
+                {% for licence in licences %}
+                    <option value="{{ licence }}">{{ licence }}</option>
+                {% endfor %}
+                </select>
 
                 <button type="button" class="btn btn-primary" id="import-file-submit">Import</button>
             </div>
@@ -71,6 +75,12 @@
                 <input type="text" class="form-control" id="import-text-name" placeholder="Source name">
 {#                <label for="import-text" class="form-label">Enter valid jupyter json:</label>#}
                 <textarea class="form-control" id="import-text" placeholder="Jupyter json" style="height: 450px"></textarea>
+                <select id="import-text-licence" class="form-select" aria-label="Select licence">
+                    <option value="" selected disabled hidden="">Select licence</option>
+                {% for licence in licences %}
+                    <option value="{{ licence }}">{{ licence }}</option>
+                {% endfor %}
+                </select>
 
                 <button type="button" class="btn btn-primary" id="import-text-submit">Import</button>
             </div>
