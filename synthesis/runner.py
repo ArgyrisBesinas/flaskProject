@@ -94,14 +94,14 @@ class Code:
         self.implementations = [self.implementations[original[pos]] for pos in range(n)]
 
 
-def start_synthesis_pysynth(job_id, text):
+def start_synthesis_pysynth(job_id, text, licence):
     job_management.edit_job_by_id(job_id, "Running", info="Searching", progress_percent=0)
 
     # search snippets
     found = list()
     result = Code(text)
     for word in result.words:
-        for entry in snippet_management.search_snippets(word, None, 0):
+        for entry in snippet_management.search_snippets(word, None, 0, None, licence):
             found.append(Snippet(entry["description"], entry["code"],
                                  (entry["snippet_source_id"], entry["snippet_local_id"])))
 

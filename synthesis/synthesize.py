@@ -15,14 +15,14 @@ def get_synth_methods_dict():
     return methods_dict
 
 
-def initiate_synth(synth_source, synth_method):
+def initiate_synth(synth_source, synth_method, licence):
     # 1. insert new job to db
-    job_id = job_management.insert_new_job_and_return_id(synth_source)
+    job_id = job_management.insert_new_job_and_return_id(synth_source, licence)
     if job_id is None:
         raise exc.MySqlError('Error inserting new job')
     # 2. start synth in module
     start_synth_func = get_synth_methods_dict()[synth_method]
-    thread = Thread(target=start_synth_func, name=job_id, args=(job_id, synth_source))
+    thread = Thread(target=start_synth_func, name=job_id, args=(job_id, synth_source, licence))
     thread.start()
     # start_synthesis(job_id, synth_source)
     error = None

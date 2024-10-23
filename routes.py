@@ -14,7 +14,9 @@ def define_routes(app):
     @app.route('/')
     def new_job():
         # print(list(synthesize.get_synth_methods_dict().keys()))
-        return render_template('new_job.html', synth_methods=list(synthesize.get_synth_methods_dict().keys()))
+        return render_template('new_job.html',
+                               synth_methods=list(synthesize.get_synth_methods_dict().keys()),
+                               licences=snippet_management.get_licence_types())
 
     @app.route('/list_jobs')
     def list_job():
@@ -50,7 +52,7 @@ def define_routes(app):
 
     @app.route('/import_repos')
     def import_repos():
-        return render_template('import_repos.html')
+        return render_template('import_repos.html', licences=snippet_management.get_licence_types())
 
     # ---------------------------------------------------
     # start of backend routes
@@ -62,6 +64,7 @@ def define_routes(app):
 
         synth_source = request.form.get('synth_source', None, str)
         synth_method = request.args.get('synth_method', None, str)
+        synth_licence = request.args.get('licence', None, str)
 
         if synth_source is None or synth_source == '':
             return 'synth_source is missing', 400
@@ -69,13 +72,15 @@ def define_routes(app):
         if synth_method is None or synth_method == '':
             return 'synth_method is missing', 400
 
+        if synth_licence is None or synth_licence == '':
+            return 'licence is missing', 400
+
         try:
-            job_id = synthesize.initiate_synth(synth_source, synth_method)
+            job_id = synthesize.initiate_synth(synth_source, synth_method, synth_licence)
 
         except (exc.MySqlError, exc.SynthesisError) as e:
             return str(e), 400
 
-        # return 'Job with id "' + str(job_id) + '" started successfully.'
         return str(job_id)
 
     # Get jobs in json for listing
@@ -154,14 +159,19 @@ def define_routes(app):
             name = request.args.get('name')
             url = request.args.get('url')
             source = request.args.get('source')
+            licence = request.args.get('licence')
 
         elif request.method == 'POST':
             name = request.form.get('name')
             url = request.form.get('url')
             source = request.form.get('source')
+            licence = request.form.get('licence')
 
         if name is None:
             name = ''
+
+        if licence is None:
+            return "licence is required", 400
 
         user = '1'
 
@@ -177,7 +187,7 @@ def define_routes(app):
             return str(e), 400
 
         try:
-            rows = snippet_management.insert_new_snippets(snippets, name, url, user, False, python_ver)
+            rows = snippet_management.insert_new_snippets(snippets, name, url, user, False, python_ver, licence)
         except exc.MySqlError as e:
             return str(e), 400
         else:
@@ -191,6 +201,10 @@ def define_routes(app):
         if name is None:
             name = ''
 
+        licence = request.args.get('licence')
+        if licence is None:
+            return "licence is required", 400
+
         json = request.get_json()
         if json is None:
             return "invalid json posted", 400
@@ -203,7 +217,7 @@ def define_routes(app):
             return str(e), 400
 
         try:
-            rows = snippet_management.insert_new_snippets(snippets, name, None, user, True, python_ver)
+            rows = snippet_management.insert_new_snippets(snippets, name, None, user, True, python_ver, licence)
         except exc.MySqlError as e:
             return str(e), 400
         else:
@@ -285,7 +299,7 @@ def define_routes(app):
             snippet_source_id_args = snippet_source_ids
 
         try:
-            sources = snippet_management.get_snippet_sources(snippet_source_id_args, None, 'json')
+            sources = snippet_management.get_snippet_sources(snippet_source_id_args, None, None, 'json')
         except exc.MySqlError as e:
             return str(e), 400
 
@@ -373,10 +387,12 @@ def define_routes(app):
 
         description_search_text = request.form.get('description_search_text', None, str)
         code_search_text = request.form.get('code_search_text', None, str)
-        disabled = request.form.get('disabled', None, int)
+        include_disabled = request.form.get('include_disabled', None, int)
+        licence = request.form.get('licence', None, int)
 
         try:
-            snippets = snippet_management.search_snippets(description_search_text, code_search_text, disabled, None, 'json')
+            snippets = snippet_management.search_snippets(description_search_text, code_search_text, include_disabled,
+                                                          None, licence, 'json')
         except exc.MySqlError as e:
             return str(e), 400
 

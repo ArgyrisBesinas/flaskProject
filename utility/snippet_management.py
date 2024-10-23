@@ -5,15 +5,15 @@ import json
 import synthesis.preprocess as preprocess
 
 
-def insert_new_snippets(snippets, name, url, user, manual=False, python_ver=None):
+def insert_new_snippets(snippets, name, url, user, manual=False, python_ver=None, licence=None):
     mysql_connection = get_mysql_connection()
 
     cursor = mysql_connection.cursor()
 
-    sql = "INSERT INTO snippet_sources (name, url, user, manual_entry, python_ver) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO snippet_sources (name, url, user, manual_entry, python_ver, licence) VALUES (%s, %s, %s, %s, %s, %s)"
 
     try:
-        cursor.execute(sql, (name, url, user, manual, python_ver))
+        cursor.execute(sql, (name, url, user, manual, python_ver, licence))
     except db_errors.Error as err:
         print('snippet_source error.', err)
         mysql_connection.rollback()
@@ -147,7 +147,7 @@ def update_snippets(snippet_source_id, name, snippets, url, user=None, python_ve
     return snippets_inserted
 
 
-def get_snippet_sources(snippet_source_ids=(), user=None, data_type=None):
+def get_snippet_sources(snippet_source_ids=(), user=None, licence=None, data_type=None):
     if data_type is not None and data_type != 'json':
         raise exc.MySqlError('Error getting snippet sources. "data_type" must be json or None')
 
@@ -155,14 +155,26 @@ def get_snippet_sources(snippet_source_ids=(), user=None, data_type=None):
 
     cursor = mysql_connection.cursor()
 
-    sql = 'SELECT * FROM snippet_sources'
+    sql = 'SELECT * FROM snippet_sources WHERE 1=1'
 
+    # if snippet_source_ids is not None and len(snippet_source_ids) > 0:
+    #     sql += ' WHERE `snippet_source_id` IN (' + ', '.join(['%s'] * len(snippet_source_ids)) + ')'
+    #     if user is not None:
+    #         sql += ' AND user = ' + user
+    #     if licence is not None:
+    #         sql += ' AND licence = ' + licence
+    # elif user is not None:
+    #     sql += ' WHERE user = ' + user
+    #     if licence is not None:
+    #         sql += ' AND licence = ' + licence
+    # elif licence is not None:
+    #     sql += ' WHERE licence = ' + licence
     if snippet_source_ids is not None and len(snippet_source_ids) > 0:
-        sql += ' WHERE `snippet_source_id` IN (' + ', '.join(['%s'] * len(snippet_source_ids)) + ')'
-        if user is not None:
-            sql += ' AND user = ' + user
-    elif user is not None:
-        sql += ' WHERE user = ' + user
+        sql += ' AND `snippet_source_id` IN (' + ', '.join(['%s'] * len(snippet_source_ids)) + ')'
+    if user is not None:
+        sql += ' AND user = ' + user
+    if licence is not None:
+        sql += ' AND licence = ' + licence
 
     try:
         cursor.execute(sql, snippet_source_ids)
@@ -282,7 +294,7 @@ def toggle_snippets(snippet_source_id, snippet_local_ids, set_value, user=None):
 
 
 # if all args are None, returns all snippets
-def search_snippets(description_search_text=None, code_search_text=None, disabled=None, user=None, data_type=None):
+def search_snippets(description_search_text=None, code_search_text=None, include_disabled=None, user=None, licence=None, data_type=None):
     if data_type is not None and data_type != 'json':
         raise exc.MySqlError('Error searching snippets. "data_type" must be json or None')
 
@@ -314,13 +326,19 @@ def search_snippets(description_search_text=None, code_search_text=None, disable
         sql += 'AND LOWER(s.code) LIKE %s '
         sql_args.append('%' + code_search_text + '%')
 
-    if disabled != 1:
-        sql += 'AND s.disabled = %s'
+    if include_disabled != 1:
+        sql += 'AND s.disabled = %s '
+        sql_args.append(0)
+        sql += 'AND ss.disabled = %s '
         sql_args.append(0)
 
     if user is not None:
-        sql += 'AND s.user = %s'
+        sql += 'AND s.user = %s '
         sql_args.append(user)
+
+    if licence is not None:
+        sql += 'AND ss.licence = %s '
+        sql_args.append(licence)
 
     try:
         cursor.execute(sql, sql_args)
@@ -341,3 +359,7 @@ def search_snippets(description_search_text=None, code_search_text=None, disable
         return json.dumps(json_data, default=str)
 
     return json_data
+
+
+def get_licence_types():
+    return ["N/A", "GPL", "MIT", "Apache 2.0", "BSD", "Creative Commons 0", "Creative Commons 3", "Proprietary"]
