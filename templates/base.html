@@ -6,6 +6,11 @@
     <link href="/static/dist/bootstrap.min.css" rel="stylesheet">
     <link href="/static/dist/bootstrap-table.min.css" rel="stylesheet">
     <link href="/static/dist/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Prism CSS for code highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet"/>
+    <style type='text/css'> pre {display: inline-block;} </style>
+
     <style>
         #body_container {
             padding-top: 70px;
@@ -24,9 +29,8 @@
             margin-right: 10px;
             transition: background-color 0.3s ease-in-out;
         }
-
-
     </style>
+
     {% block head %}
         <title>{% block title %}{% endblock %} - My Webpage</title>
     {% endblock %}
@@ -35,7 +39,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top"
      style="background: #00A6D3">
     <div class="container-xl">
-{#        <a class="navbar-brand" href="/" style="font-weight: bold; color: #FFFFFF;">Home</a>#}
         <a class="navbar-brand" href="/" style="font-weight: bold; color: #FFFFFF;">Synthesize</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -44,9 +47,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-{#                <li class="nav-item">#}
-{#                    <a class="nav-link" href="/new_job" style="color: #EFEFEF;">Synthesize</a>#}
-{#                </li>#}
                 <li class="nav-item">
                     <a class="nav-link" href="/list_jobs" style="color: #EFEFEF;">History</a>
                 </li>
@@ -61,7 +61,6 @@
 <div id="body_container" class="container-xl">
     <div id="content">{% block content %}{% endblock %}</div>
 
-
     <div id="footer">
         {% block footer %}
             &copy; Copyright 2024 by Argyrios Besinas.
@@ -69,11 +68,16 @@
     </div>
 </div>
 
-
+<!-- Bootstrap and other scripts -->
 <script src="/static/dist/bootstrap.bundle.min.js"></script>
 <script src="/static/dist/jquery-3.7.0.min.js"></script>
 <script src="/static/dist/bootstrap-table.min.js"></script>
 <script src="/static/base_html.js"></script>
+
+<!-- Prism JS for code highlighting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
 {% block script %}{% endblock %}
 </body>
 </html>
