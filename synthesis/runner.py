@@ -12,10 +12,17 @@ class Snippet:
         self.code = code
         self.source = source
         self.size = len(code.split("\n"))
-        self.words = set([t.string.lower() for t in tokenize.tokenize(io.BytesIO(desc.encode('utf-8')).readline) if t.type==1])
+        #self.words = set([t.string.lower() for t in tokenize.tokenize(io.BytesIO(desc.encode('utf-8')).readline) if t.type==1])
+        self.words = set([t.lower() for t in desc.split()])
+
+        #codewords = set([t.lower() for t in code.split()])
+        #self.words = list(self.words)+list(codewords)
+        #self.words = set([word for token in self.words for word in token.split("_")])
+        #self.words = self.words-{"#", "\n", "(", ")", ":"}
 
         inputs = list()
         outputs = list()
+
         depth = 0
         prev_token = None
         for token in tokenize.tokenize(io.BytesIO(code.encode('utf-8')).readline):
@@ -29,6 +36,7 @@ class Snippet:
             elif token.type == 1 and (prev_token is None or prev_token.string != '.'):
                 inputs.append(token)
             prev_token = token
+
 
         def tmin(t1, t2):
             if t1[0] < t2[0]:
@@ -59,7 +67,8 @@ class Snippet:
 
 class Code:
     def __init__(self, desc, implementations=None):
-        self.words = set([t.string.lower() for t in tokenize.tokenize(io.BytesIO(desc.encode('utf-8')).readline) if t.type==1])
+        #self.words = set([t.string.lower() for t in tokenize.tokenize(io.BytesIO(desc.encode('utf-8')).readline) if t.type==1])
+        self.words = set([t.lower() for t in desc.split()])
         self.implementations = list() if implementations is None else implementations
 
     def overlap(self, snippet: Snippet):
@@ -102,7 +111,7 @@ def start_synthesis_pysynth(job_id, text, licence):
     result = Code(text)
     for word in result.words:
         for entry in snippet_management.search_snippets(word, None, 0, None, licence):
-            found.append(Snippet(entry["description"], entry["code"],
+            found.append(Snippet(entry["description"].replace("\n", " "), entry["code"],
                                  (entry["snippet_source_id"], entry["snippet_local_id"])))
 
     original_remaining_words = len(result.words)
@@ -119,7 +128,7 @@ def start_synthesis_pysynth(job_id, text, licence):
                 best_snippet = snippet
         # add best entry to solution
         if best_snippet is not None:
-            # best_snippet.print()
+            #best_snippet.print()
             result.add(best_snippet)
 
         result.sort()
